@@ -36,7 +36,7 @@ Think old-school bulletin boards with a North Jersey attitude: diner coffee, Sun
 | 🧪 **Demo Mode** | Explore the desktop controls without a connected radio |
 | 📦 **The Books** | Create a ZIP backup of available local settings and database files |
 
-**Development note:** The desktop interface is an early implementation. Live radio diagnostics, restore, packaged Mac releases, and automated screenshots are not yet finished or validated.
+**Development note:** The desktop dashboard includes live server logs, process monitoring, USB port discovery, optional process restart, and a radio-free demo mode. Intel Mac build and release workflows are configured; check [Releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases) for a successfully published build. Real radio connection verification, restore, and automated screenshot publication still require further validation.
 
 ## 🤌 The Playbook — radio commands
 
@@ -52,11 +52,33 @@ Send these as **direct messages to the Meshtastic BBS node**.
 | `/tools` | Utilities |
 | `/cancel` | Return to the main menu |
 
-The original TC²-BBS one-letter menus and quick commands remain available. The new aliases are currently on the feature branch until merged. More details: [SITDOWN_COMMANDS.md](SITDOWN_COMMANDS.md).
+The original TC²-BBS one-letter menus and quick commands remain available alongside the Jersey shortcuts. More details: [SITDOWN_COMMANDS.md](SITDOWN_COMMANDS.md).
 
-## 🖥️ Run the desktop preview
+## 🖥️ Desktop preview (demonstration data)
 
-Requires **Python 3 with Tkinter** and the dependencies listed in `requirements.txt`. For a live radio, configure your Meshtastic node and create `config.ini` first.
+**THE SITDOWN BBS — North Jersey Communications Division**
+
+The current desktop dashboard uses Italian red and green accents, dark charcoal panels, and readable high-contrast controls. It includes **Start the Sitdown**, **Fuggedaboutit**, **The Playbook**, **The Family Business**, **The Books**, live server logs, observed node activity, and a demo mode that does not require a connected radio.
+
+> **Screenshots:** Updated release screenshots have not yet been captured and verified. We will display real screenshots here once available, rather than presenting older builds as the current interface. Demo-mode images will be labeled **Demonstration data — no live radio connection**.
+
+### 📦 Download the latest Intel Mac build
+
+[![Intel Mac test build](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/intel-mac-test-build.yml/badge.svg)](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/intel-mac-test-build.yml)
+
+**[View GitHub Releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases)** · **[Download test builds from GitHub Actions](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/intel-mac-test-build.yml)**
+
+- **GitHub Releases:** Look for the latest `The-Sitdown-BBS-Intel-Mac-*.dmg` attached to a successful release.
+- **GitHub Actions:** Open a successful **Intel Mac test build** run and download the **The-Sitdown-BBS-Intel-Mac-Test** artifact. Artifacts expire after 14 days.
+- **Intel Mac:** The workflow targets x86-64 macOS. Builds are currently **unsigned and unnotarized**; approve trusted builds through macOS Privacy & Security if prompted.
+- **Demo mode:** Launch the app and enable **Demo mode (no radio)** to explore the dashboard without transmitting.
+- **Live radio:** Configure your Meshtastic device before starting the real BBS server. A running process alone does not confirm a connected radio.
+
+For packaging details see [INTEL_MAC_TEST_BUILDS.md](INTEL_MAC_TEST_BUILDS.md), and for release instructions see [RELEASE_PROCESS.md](RELEASE_PROCESS.md).
+
+### 🛠️ Run from source
+
+Requires **Python 3 with Tkinter** and the dependencies in `requirements.txt`.
 
 ```bash
 git clone https://github.com/BaconDisk22/The-Sitdown-BBS.git
@@ -65,17 +87,11 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp example_config.ini config.ini
-# Edit config.ini for your device.
+# Review config.ini before connecting a radio.
 python3 sitdown_desktop.py
 ```
 
-Select **Demo mode** if you don't have a radio connected. For the original headless server:
-
-```bash
-python3 server.py
-```
-
-**Intel Mac users:** A packaged click-to-open `.app`/`.dmg` is planned, but not yet available. Until then, use the Python desktop preview. See [SITDOWN_DESKTOP.md](SITDOWN_DESKTOP.md) for current limitations.
+Select **Demo mode** to explore without a radio. For the headless server run `python3 server.py`.
 
 ## 🎨 Jersey colors, not Joker colors
 
