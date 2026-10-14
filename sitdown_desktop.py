@@ -118,7 +118,7 @@ class SitdownApp:
     def styled_button(self, parent, text, command, color=None):
         # macOS Aqua ignores custom backgrounds on native Tk buttons,
         # producing white-on-white labels. Use a keyboard-accessible Label.
-    background = color or self.colors["primary"]
+        background = color or self.colors["primary"]
         control = tk.Label(parent, text=text, bg=background, fg="#FFFFFF",
                            padx=13, pady=10, cursor="hand2",
                            font=("Helvetica", 12, "bold"), relief="flat",
