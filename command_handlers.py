@@ -30,26 +30,26 @@ def build_menu(items, menu_name):
     menu_str = f"{menu_name}\n"
     for item in items:
         if item.strip() == 'Q':
-            menu_str += "[Q]uick Commands\n"
+            menu_str += "[Q] The Playbook\n"
         elif item.strip() == 'B':
-            if menu_name == "📰BBS Menu📰":
-                menu_str += "[B]ulletins\n"
+            if menu_name == "📰 The Social Club":
+                menu_str += "[B] Bulletin Boards\n"
             else:
-                menu_str += "[B]BS\n"
+                menu_str += "[B] The Social Club\n"
         elif item.strip() == 'U':
-            menu_str += "[U]tilities\n"
+            menu_str += "[U] The Backroom\n"
         elif item.strip() == 'X':
-            menu_str += "E[X]IT\n"
+            menu_str += "E[X]IT - Fuggedaboutit\n"
         elif item.strip() == 'M':
-            menu_str += "[M]ail\n"
+            menu_str += "[M] A Word With You\n"
         elif item.strip() == 'C':
-            menu_str += "[C]hannel Dir\n"
+            menu_str += "[C] What Exit?\n"
         elif item.strip() == 'J':
             menu_str += "[J]S8CALL\n"
         elif item.strip() == 'S':
-            menu_str += "[S]tats\n"
+            menu_str += "[S] Who's Connected?\n"
         elif item.strip() == 'F':
-            menu_str += "[F]ortune\n"
+            menu_str += "[F] Jersey Wisdom\n"
         elif item.strip() == 'W':
             menu_str += "[W]all of Shame\n"
     return menu_str
@@ -58,13 +58,13 @@ def handle_help_command(sender_id, interface, menu_name=None):
     if menu_name:
         update_user_state(sender_id, {'command': 'MENU', 'menu': menu_name, 'step': 1})
         if menu_name == 'bbs':
-            response = build_menu(bbs_menu_items, "📰BBS Menu📰")
+            response = build_menu(bbs_menu_items, "📰 The Social Club")
         elif menu_name == 'utilities':
-            response = build_menu(utilities_menu_items, "🛠️Utilities Menu🛠️")
+            response = build_menu(utilities_menu_items, "🛠️ The Backroom")
     else:
         update_user_state(sender_id, {'command': 'MAIN_MENU', 'step': 1})  # Reset to main menu state
         mail = get_mail(get_node_id_from_num(sender_id, interface))
-        response = build_menu(main_menu_items, f"💾TC² BBS💾 (✉️:{len(mail)})")
+        response = build_menu(main_menu_items, f"🤌 THE SITDOWN BBS (✉️:{len(mail)})")
     send_message(response, sender_id, interface)
 
 def get_node_name(node_id, interface):
@@ -75,25 +75,25 @@ def get_node_name(node_id, interface):
 
 
 def handle_mail_command(sender_id, interface):
-    response = "✉️Mail Menu✉️\nWhat would you like to do with mail?\n[R]ead  [S]end E[X]IT"
+    response = "✉️ A Word With You\nWhat would you like to do with mail?\n[R]ead  [S]end E[X]IT - Fuggedaboutit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'MAIL', 'step': 1})
 
 
 
 def handle_bulletin_command(sender_id, interface):
-    response = f"📰Bulletin Menu📰\nWhich board would you like to enter?\n[G]eneral  [I]nfo  [N]ews  [U]rgent"
+    response = f"📰 The Social Club Boards\nWhich board would you like to enter?\n[G]eneral  [I]nfo  [N]ews  [U]rgent"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'BULLETIN_MENU', 'step': 1})
 
 
 def handle_exit_command(sender_id, interface):
-    send_message("Type 'HELP' for a list of commands.", sender_id, interface)
+    send_message("Fuggedaboutit! Send HELP to come back.", sender_id, interface)
     update_user_state(sender_id, None)
 
 
 def handle_stats_command(sender_id, interface):
-    response = "📊Stats Menu📊\nWhat stats would you like to view?\n[N]odes  [H]ardware  [R]oles  E[X]IT"
+    response = "📊 Who's Connected?\nWhat stats would you like to view?\n[N]odes  [H]ardware  [R]oles  E[X]IT - Fuggedaboutit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'STATS', 'step': 1})
 
@@ -357,7 +357,7 @@ def handle_wall_of_shame_command(sender_id, interface):
 
 
 def handle_channel_directory_command(sender_id, interface):
-    response = "📚CHANNEL DIRECTORY📚\nWhat would you like to do?\n[V]iew  [P]ost  E[X]IT"
+    response = "📚CHANNEL DIRECTORY📚\nWhat would you like to do?\n[V]iew  [P]ost  E[X]IT - Fuggedaboutit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 1})
 
@@ -662,6 +662,6 @@ def handle_list_channels_command(sender_id, interface):
 
 
 def handle_quick_help_command(sender_id, interface):
-    response = ("✈️QUICK COMMANDS✈️\nSend command below for usage info:\nSM,, - Send "
+    response = ("🤌 THE PLAYBOOK\nSend command below for usage info:\nSM,, - Send "
                 "Mail\nCM - Check Mail\nPB,, - Post Bulletin\nCB,, - Check Bulletins\n")
     send_message(response, sender_id, interface)
