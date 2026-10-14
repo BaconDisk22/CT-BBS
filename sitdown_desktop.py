@@ -75,23 +75,7 @@ class SitdownApp:
         def label(parent, text, size=11, color=None):
             return tk.Label(parent, text=text, font=("Helvetica", size, "bold"),
                             fg=color or c["text"], bg=c["background"])
-        def button(parent, text, command, color=None):
-            # macOS Aqua ignores custom backgrounds on native Tk buttons,
-            # producing white-on-white labels. Use a keyboard-accessible Label.
-            background = color or c["primary"]
-            control = tk.Label(parent, text=text, bg=background, fg="#FFFFFF",
-                               padx=13, pady=10, cursor="hand2",
-                               font=("Helvetica", 12, "bold"), relief="flat",
-                               highlightthickness=2, highlightbackground=c["background"],
-                               takefocus=True)
-            control.bind("<Button-1>", lambda _event: command())
-            control.bind("<Return>", lambda _event: command())
-            control.bind("<space>", lambda _event: command())
-            control.bind("<FocusIn>", lambda _event: control.configure(
-                highlightbackground=c["highlight"]))
-            control.bind("<FocusOut>", lambda _event: control.configure(
-                highlightbackground=c["background"]))
-            return control
+        button = self.styled_button
         label(self.root, "🤌 THE SITDOWN BBS", 25, c["highlight"]).pack(pady=(18, 1))
         label(self.root, "North Jersey Communications Division", 12).pack()
         label(self.root, "Ayyy, pull up a chair. We gotta talk.", 10).pack(pady=(2, 12))
@@ -130,6 +114,24 @@ class SitdownApp:
                               font=("Menlo", 12), padx=12, pady=10)
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
         self.log("Ready, pal. Pick a radio, or check Demo mode.")
+
+    def styled_button(self, parent, text, command, color=None):
+        # macOS Aqua ignores custom backgrounds on native Tk buttons,
+        # producing white-on-white labels. Use a keyboard-accessible Label.
+    background = color or self.colors["primary"]
+        control = tk.Label(parent, text=text, bg=background, fg="#FFFFFF",
+                           padx=13, pady=10, cursor="hand2",
+                           font=("Helvetica", 12, "bold"), relief="flat",
+                           highlightthickness=2, highlightbackground=self.colors["background"],
+                           takefocus=True)
+        control.bind("<Button-1>", lambda _event: command())
+        control.bind("<Return>", lambda _event: command())
+        control.bind("<space>", lambda _event: command())
+        control.bind("<FocusIn>", lambda _event: control.configure(
+            highlightbackground=self.colors["highlight"]))
+        control.bind("<FocusOut>", lambda _event: control.configure(
+            highlightbackground=self.colors["background"]))
+        return control
 
     def log(self, message):
         self.output.configure(state="normal")
@@ -236,7 +238,7 @@ class SitdownApp:
             win.clipboard_clear()
             win.clipboard_append(selected.get())
             win.update()
-        button(win, "Copy selected command", copy, THEME["primary"]).pack(pady=15)
+        self.styled_button(win, "Copy selected command", copy, THEME["primary"]).pack(pady=15)
 
     def settings(self):
         win = tk.Toplevel(self.root)
@@ -248,7 +250,7 @@ class SitdownApp:
                      insertbackground=THEME["text"]).pack(padx=20)
         tk.Label(win, text="Custom welcome is saved locally; radio reply integration is pending.",
                  bg=THEME["background"], fg=THEME["highlight"]).pack(padx=20, pady=10)
-        button(win, "Save", self.save, THEME["connected"]).pack(pady=12)
+        self.styled_button(win, "Save", self.save, THEME["connected"]).pack(pady=12)
 
     def backup(self):
         DATA.mkdir(parents=True, exist_ok=True)
