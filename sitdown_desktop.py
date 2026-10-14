@@ -43,7 +43,8 @@ class SitdownApp:
         self.status = tk.StringVar(value="Stopped")
         self.colors = THEME
         self.root.title("THE SITDOWN BBS | North Jersey Communications Division")
-        self.root.geometry("840x670")
+        self.root.geometry("1080x760")
+        self.root.minsize(900, 670)
         self.root.configure(bg=THEME["background"])
         self.load()
         self.build()
@@ -75,9 +76,22 @@ class SitdownApp:
             return tk.Label(parent, text=text, font=("Helvetica", size, "bold"),
                             fg=color or c["text"], bg=c["background"])
         def button(parent, text, command, color=None):
-            return tk.Button(parent, text=text, command=command, bg=color or c["primary"],
-                             fg="white", activebackground=c["highlight"], relief="flat",
-                             padx=13, pady=8, font=("Helvetica", 11, "bold"))
+            # macOS Aqua ignores custom backgrounds on native Tk buttons,
+            # producing white-on-white labels. Use a keyboard-accessible Label.
+            background = color or c["primary"]
+            control = tk.Label(parent, text=text, bg=background, fg="#FFFFFF",
+                               padx=13, pady=10, cursor="hand2",
+                               font=("Helvetica", 12, "bold"), relief="flat",
+                               highlightthickness=2, highlightbackground=c["background"],
+                               takefocus=True)
+            control.bind("<Button-1>", lambda _event: command())
+            control.bind("<Return>", lambda _event: command())
+            control.bind("<space>", lambda _event: command())
+            control.bind("<FocusIn>", lambda _event: control.configure(
+                highlightbackground=c["highlight"]))
+            control.bind("<FocusOut>", lambda _event: control.configure(
+                highlightbackground=c["background"]))
+            return control
         label(self.root, "🤌 THE SITDOWN BBS", 25, c["highlight"]).pack(pady=(18, 1))
         label(self.root, "North Jersey Communications Division", 12).pack()
         label(self.root, "Ayyy, pull up a chair. We gotta talk.", 10).pack(pady=(2, 12))
@@ -103,7 +117,7 @@ class SitdownApp:
             ("The Family Business", self.settings, c["panel"]),
             ("The Books", self.backup, c["panel"])
         ]:
-            button(actions, title, fn, color).pack(side="left", padx=(0, 7))
+            button(actions, title, fn, color).pack(side="left", padx=(0, 8), pady=4)
         button(self.root, "Refresh USB Ports", self.list_ports, c["panel"]).pack(anchor="w", padx=20)
         label(self.root, "Status:", 11).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.status, bg=c["background"],
@@ -112,7 +126,8 @@ class SitdownApp:
         tk.Label(self.root, textvariable=self.node_count, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.uptime, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
         self.output = tk.Text(self.root, bg=c["panel"], fg=c["text"], insertbackground=c["text"],
-                              wrap="word", relief="flat", state="disabled", height=17)
+                              wrap="word", relief="flat", state="disabled", height=17,
+                              font=("Menlo", 12), padx=12, pady=10)
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
         self.log("Ready, pal. Pick a radio, or check Demo mode.")
 
@@ -221,8 +236,7 @@ class SitdownApp:
             win.clipboard_clear()
             win.clipboard_append(selected.get())
             win.update()
-        tk.Button(win, text="Copy selected command", command=copy,
-                  bg=THEME["primary"], fg="white").pack(pady=15)
+        button(win, "Copy selected command", copy, THEME["primary"]).pack(pady=15)
 
     def settings(self):
         win = tk.Toplevel(self.root)
@@ -234,7 +248,7 @@ class SitdownApp:
                      insertbackground=THEME["text"]).pack(padx=20)
         tk.Label(win, text="Custom welcome is saved locally; radio reply integration is pending.",
                  bg=THEME["background"], fg=THEME["highlight"]).pack(padx=20, pady=10)
-        tk.Button(win, text="Save", command=self.save, bg=THEME["connected"], fg="white").pack(pady=12)
+        button(win, "Save", self.save, THEME["connected"]).pack(pady=12)
 
     def backup(self):
         DATA.mkdir(parents=True, exist_ok=True)
