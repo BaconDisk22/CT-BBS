@@ -13,6 +13,7 @@ from command_handlers import (
 from db_operations import add_bulletin, add_mail, delete_bulletin, delete_mail, get_db_connection, add_channel
 from js8call_integration import handle_js8call_command, handle_js8call_steps, handle_group_message_selection
 from utils import get_user_state, get_node_short_name, get_node_id_from_num, send_message
+from sitdown_commands import resolve_shortcut
 
 main_menu_handlers = {
     "q": handle_quick_help_command,
@@ -59,6 +60,23 @@ def process_message(sender_id, message, interface, is_sync_message=False):
     message_strip = message.strip()
 
     bbs_nodes = interface.bbs_nodes
+
+    # Friendly slash commands route to existing, tested handlers.
+    shortcut = resolve_shortcut(message, state)
+    if shortcut is not None and not is_sync_message:
+        if shortcut == 'x':
+            handle_help_command(sender_id, interface)
+        elif shortcut == 'q':
+            handle_quick_help_command(sender_id, interface)
+        elif shortcut == 'cm':
+            handle_check_mail_command(sender_id, interface)
+        elif shortcut == 'f':
+            handle_fortune_command(sender_id, interface)
+        elif shortcut == 'b':
+            handle_bulletin_command(sender_id, interface)
+        elif shortcut == 'u':
+            handle_help_command(sender_id, interface, 'utilities')
+        return
 
     # Handle repeated characters for single character commands using a prefix
     if len(message_lower) == 2 and message_lower[1] == 'x':
