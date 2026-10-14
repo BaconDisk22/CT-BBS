@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """The Sitdown BBS desktop launcher. Standard-library Tkinter GUI."""
 import json
+import runpy
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -10,7 +12,7 @@ from tkinter import messagebox, filedialog
 from sitdown_monitor import ServerSupervisor
 import zipfile
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 DATA = Path.home() / ".sitdown-bbs"
 CONFIG = DATA / "launcher.json"
 THEME = {"background": "#121212", "panel": "#242424", "primary": "#C62828",
@@ -138,7 +140,11 @@ class SitdownApp:
             self.log("DEMO: No radio messages are sent.")
             self.retry_count = 0
             return
-        config = ROOT / "config.ini"
+        DATA.mkdir(parents=True, exist_ok=True)
+        config = DATA / "config.ini" if getattr(sys, "frozen", False) else ROOT / "config.ini"
+        if not config.exists() and getattr(sys, "frozen", False) and (ROOT / "example_config.ini").exists():
+            shutil.copy2(ROOT / "example_config.ini", config)
+            self.log("Created config.ini in ~/.sitdown-bbs. Review it before connecting a radio.")
         if not config.exists():
             messagebox.showerror("Need a Guy?", "Missing config.ini. Copy example_config.ini to config.ini and configure it first.")
             return
@@ -147,12 +153,13 @@ class SitdownApp:
             messagebox.showerror("Need a Guy?", "Enter the radio IP or hostname for TCP.")
             return
         self.save()
-        cmd = [sys.executable, "-u", str(ROOT / "server.py"), "--config", str(config),
+        cmd = ([sys.executable, "--sitdown-server"] if getattr(sys, "frozen", False)
+               else [sys.executable, "-u", str(ROOT / "server.py")]) + ["--config", str(config),
                "--interface-type", self.connection.get()]
         if addr:
             cmd += ["--host" if self.connection.get() == "tcp" else "--port", addr]
         try:
-            self.supervisor = ServerSupervisor(cmd, ROOT)
+            self.supervisor = ServerSupervisor(cmd, DATA if getattr(sys, "frozen", False) else ROOT)
             self.supervisor.start()
             self.status.set("Starting...")
             self.log("Starting The Sitdown BBS...")
@@ -247,6 +254,11 @@ class SitdownApp:
 
 
 if __name__ == "__main__":
+    if "--sitdown-server" in sys.argv:
+        sys.argv.remove("--sitdown-server")
+        import server  # Ensures PyInstaller includes the server and its dependencies.
+        runpy.run_module("server", run_name="__main__")
+        sys.exit(0)
     root = tk.Tk()
     SitdownApp(root)
     root.mainloop()
