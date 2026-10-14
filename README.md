@@ -1,250 +1,122 @@
-# TC²-BBS Meshtastic Version
+<div align="center">
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B1OZ22Z)
+# 🤌 THE SITDOWN BBS
+### 🇮🇹 North Jersey Communications Division 🇮🇹
 
-This is the TC²-BBS system integrated with Meshtastic devices. The system allows for message handling, bulletin boards, mail systems, and a channel directory.
+**“Ayyy, pull up a chair. We gotta talk.”**
 
-### Docker
+🖤 **Jersey Black** · ❤️ **Italian Red** · 💚 **Italian Green** · 🟡 **Diner Gold**
 
-If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
+*A neighborhood social club for Meshtastic radio communications. Everybody's got connections.*
 
-[![Docker HUB](https://icon-icons.com/downloadimage.php?id=151885&root=2530/PNG/128/&file=docker_button_icon_151885.png)](https://hub.docker.com/r/thealhu/tc2-bbs-mesh)
+</div>
 
-## Setup
+---
 
-### Requirements
+## 🥩 Welcome to the family
 
-- Python 3.x
-- Meshtastic
-- pypubsub
+Around here, we don't just send messages. **We have sitdowns.**
 
-### Update and Install Git
-   
-   ```sh
-   sudo apt update
-   sudo apt upgrade
-   sudo apt install git
-   ```
+**The Sitdown BBS** is a New Jersey–themed fork of the TC²-BBS Meshtastic bulletin board server. Send direct messages over Meshtastic to access community bulletins, mail, channel information, and utilities—no internet required for the radio link.
 
-### Installation
+Think old-school bulletin boards with a North Jersey attitude: diner coffee, Sunday gravy, and the eternal **pork roll vs. Taylor ham** debate. Whatever exit you're from, there's a seat at the table.
 
-1. Clone the repository:
-   
-   ```sh
-   cd ~
-   git clone https://github.com/TheCommsChannel/TC2-BBS-mesh.git
-   cd TC2-BBS-mesh
-   ```
+> **Important:** This is an independent community project with a fictional Italian-American social-club theme. It is not affiliated with any television show.
 
-2. Set up a Python virtual environment:  
-   
-   ```sh
-   python -m venv venv
-   ```
+## 📻 What's in the family business?
 
-3. Activate the virtual environment:  
-   
-   - On Windows:  
-   
-   ```sh
-   venv\Scripts\activate  
-   ```
-   
-   - On macOS and Linux:
-   
-   ```sh
-   source venv/bin/activate
-   ```
+| Jersey name | What it does |
+| --- | --- |
+| 🥩 **The Social Club** | Bulletin boards and community posts |
+| ✉️ **A Word With You** | BBS mail |
+| 🗺️ **What Exit?** | Channel directory |
+| 📊 **Who's Connected?** | Server utilities and statistics |
+| 🔮 **Jersey Wisdom** | Random fortunes |
+| 🖥️ **The Sitdown Desktop** | Experimental GUI launcher for macOS and other Tkinter platforms |
+| 🧪 **Demo Mode** | Explore the desktop controls without a connected radio |
+| 📦 **The Books** | Create a ZIP backup of available local settings and database files |
 
-4. Install the required packages:  
-   
-   ```sh
-   pip install -r requirements.txt
-   ```
+**Development note:** The desktop interface is an early implementation. Live radio diagnostics, restore, packaged Mac releases, and automated screenshots are not yet finished or validated.
 
-5. Rename `example_config.ini`:
+## 🤌 The Playbook — radio commands
 
-   ```sh
-   mv example_config.ini config.ini
-   ```
+Send these as **direct messages to the Meshtastic BBS node**.
 
-6. Set up the configuration in `config.ini`:  
+| Command | Meaning |
+| --- | --- |
+| `/sitdown` or `/menu` | Back to the main menu |
+| `/help` or `/ayyy` | Quick help |
+| `/mail` or `/inbox` | Check your mail |
+| `/boards` or `/socialclub` | Open the bulletin board |
+| `/fortune` | Get a random fortune |
+| `/tools` | Utilities |
+| `/cancel` | Return to the main menu |
 
-   You'll need to open up the config.ini file in a text editor and make your changes following the instructions below
-   
-   **[interface]**  
-   If using `type = serial` and you have multiple devices connected, you will need to uncomment the `port =` line and enter the port of your device.   
-   
-   Linux Example:  
-   `port = /dev/ttyUSB0`   
-   
-   Windows Example:  
-   `port = COM3`   
-   
-   If using type = tcp you will need to uncomment the hostname = 192.168.x.x line and put in the IP address of your Meshtastic device.  
-   
-   **[sync]**  
-   Enter a list of other BBS nodes you would like to sync messages and bulletins with. Separate each by comma and no spaces as shown in the example below.   
-   You can find the nodeID in the menu under `Radio Configuration > User` for each node, or use this script for getting nodedb data from a device:  
-   
-   [Meshtastic-Python-Examples/print-nodedb.py at main · pdxlocations/Meshtastic-Python-Examples (github.com)](https://github.com/pdxlocations/Meshtastic-Python-Examples/blob/main/print-nodedb.py)  
-   
-   Example Config:  
-   
-   ```ini
-   [interface]  
-   type = serial  
-   # port = /dev/ttyUSB0  
-   # hostname = 192.168.x.x  
-   
-   [sync]  
-   bbs_nodes = !f53f4abc,!f3abc123  
-   ```
+The original TC²-BBS one-letter menus and quick commands remain available. The new aliases are currently on the feature branch until merged. More details: [SITDOWN_COMMANDS.md](SITDOWN_COMMANDS.md).
 
-### Running the Server
+## 🖥️ Run the desktop preview
 
-Run the server with:
+Requires **Python 3 with Tkinter** and the dependencies listed in `requirements.txt`. For a live radio, configure your Meshtastic node and create `config.ini` first.
 
-```sh
-python server.py
+```bash
+git clone https://github.com/BaconDisk22/The-Sitdown-BBS.git
+cd The-Sitdown-BBS
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp example_config.ini config.ini
+# Edit config.ini for your device.
+python3 sitdown_desktop.py
 ```
 
-Be sure you've followed the Python virtual environment steps above and activated it before running.
+Select **Demo mode** if you don't have a radio connected. For the original headless server:
 
-## Command line arguments
-```
-$ python server.py --help
-
-████████╗ ██████╗██████╗       ██████╗ ██████╗ ███████╗
-╚══██╔══╝██╔════╝╚════██╗      ██╔══██╗██╔══██╗██╔════╝
-   ██║   ██║      █████╔╝█████╗██████╔╝██████╔╝███████╗
-   ██║   ██║     ██╔═══╝ ╚════╝██╔══██╗██╔══██╗╚════██║
-   ██║   ╚██████╗███████╗      ██████╔╝██████╔╝███████║
-   ╚═╝    ╚═════╝╚══════╝      ╚═════╝ ╚═════╝ ╚══════╝
-Meshtastic Version
-
-usage: server.py [-h] [--config CONFIG] [--interface-type {serial,tcp}] [--port PORT] [--host HOST] [--mqtt-topic MQTT_TOPIC]
-
-Meshtastic BBS system
-
-options:
-  -h, --help            show this help message and exit
-  --config CONFIG, -c CONFIG
-                        System configuration file
-  --interface-type {serial,tcp}, -i {serial,tcp}
-                        Node interface type
-  --port PORT, -p PORT  Serial port
-  --host HOST           TCP host address
-  --mqtt-topic MQTT_TOPIC, -t MQTT_TOPIC
-                        MQTT topic to subscribe
+```bash
+python3 server.py
 ```
 
+**Intel Mac users:** A packaged click-to-open `.app`/`.dmg` is planned, but not yet available. Until then, use the Python desktop preview. See [SITDOWN_DESKTOP.md](SITDOWN_DESKTOP.md) for current limitations.
 
+## 🎨 Jersey colors, not Joker colors
 
-## Automatically run at boot
+| Role | Color |
+| --- | --- |
+| Background | `#121212` Jersey Black |
+| Panels | `#242424` Charcoal |
+| Primary actions | `#C62828` Italian Red |
+| Connected / start | `#008C45` Italian Green |
+| Text | `#F5F5F0` Mozzarella White |
+| Highlights | `#F4B942` Diner Gold |
 
-If you would like to have the script automatically run at boot, follow the steps below:
+No purple, no Joker branding. Just Jersey.
 
-1. **Edit the service file**
-   
-   First, edit the mesh-bbs.service file using your preferred text editor. The 3 following lines in that file are what we need to edit:
-   
-   ```sh
-   User=pi
-   WorkingDirectory=/home/pi/TC2-BBS-mesh
-   ExecStart=/home/pi/TC2-BBS-mesh/venv/bin/python3 /home/pi/TC2-BBS-mesh/server.py
-   ```
-   
-   The file is currently setup for a user named 'pi' and assumes that the TC2-BBS-mesh directory is located in the home directory (which it should be if the earlier directions were followed)
-   
-   We just need to replace the 4 parts that have "pi" in those 3 lines with your username.
+## 🧪 Development and testing
 
-2. **Configuring systemd**
-   
-   From the TC2-BBS-mesh directory, run the following commands:
-   
-   ```sh
-   sudo cp mesh-bbs.service /etc/systemd/system/
-   ```
-   
-   ```sh
-   sudo systemctl enable mesh-bbs.service
-   ```
-   
-   ```sh
-   sudo systemctl start mesh-bbs.service
-   ```
-   
-   The service should be started now and should start anytime your device is powered on or rebooted. You can check the status of the service by running the following command:
-   
-   ```sh
-   sudo systemctl status mesh-bbs.service
-   ```
-   
-   If you need to stop the service, you can run the following:
-   
-   ```sh
-   sudo systemctl stop mesh-bbs.service
-   ```
-   
-   If you need to restart the service, you can do so with the following command:
-   
-   ```sh
-   sudo systemctl restart mesh-bbs.service
-   ```
+```bash
+python3 -m unittest discover -s tests -p 'test_sitdown_commands.py'
+```
 
-2. **Viewing Logs**
+GitHub Actions also checks syntax and the command alias tests. Hardware validation is still required before calling a radio release production-ready.
 
-   Viewing past logs:
-   ```sh
-   journalctl -u mesh-bbs.service
-   ```
+## 🙏 Respect to the original crew
 
-   Viewing live logs:
-   ```sh
-   journalctl -u mesh-bbs.service -f
-   ```
+**The Sitdown BBS** is based on **TC²-BBS Meshtastic** by **TheCommsChannel (TC²)**. The original project provided the BBS architecture and Meshtastic integration; this fork adds its own Jersey theme, shortcuts, and desktop preview.
 
-## Radio Configuration
+- [Original TC²-BBS-mesh project](https://github.com/TheCommsChannel/TC2-BBS-mesh)
+- [Meshtastic](https://meshtastic.org/)
+- [Python Meshtastic examples](https://github.com/meshtastic/python)
+- [pdxlocations Meshtastic examples](https://github.com/pdxlocations/Meshtastic-Python-Examples)
 
-Note: There have been reports of issues with some device roles that may allow the BBS to communicate for a short time, but then the BBS will stop responding to requests. 
+**License:** GNU General Public License v3.0, consistent with the original project. Keep original copyright notices and license terms.
 
-The following device roles have been working: 
-- **Client**
-- **Router_Client**
+---
 
-## Features
+<div align="center">
 
-- **Mail System**: Send and receive mail messages.
-- **Bulletin Boards**: Post and view bulletins on various boards.
-- **Channel Directory**: Add and view channels in the directory.
-- **Statistics**: View statistics about nodes, hardware, and roles.
-- **Wall of Shame**: View devices with low battery levels.
-- **Fortune Teller**: Get a random fortune. Pulls from the fortunes.txt file. Feel free to edit this file remove or add more if you like.
+### 🤌 “Fuggedaboutit. You're family now.”
 
-## Usage
+**THE SITDOWN BBS** · *North Jersey Communications Division*
 
-You interact with the BBS by sending direct messages to the node that's connected to the system running the Python script. Sending any message to it will get a response with the main menu.  
-Make selections by sending messages based on the letter or number in brackets - Send M for [M]ail Menu for example.
+*Built for the mesh. Raised in Jersey.*
 
-A video of it in use is available on our YouTube channel:
-
-[![TC²-BBS-Mesh](https://img.youtube.com/vi/d6LhY4HoimU/0.jpg)](https://www.youtube.com/watch?v=d6LhY4HoimU)
-
-## Thanks
-
-**Meshtastic:**
-
-Big thanks to [Meshtastic](https://github.com/meshtastic) and [pdxlocations](https://github.com/pdxlocations) for the great Python examples:
-
-[python/examples at master · meshtastic/python (github.com)](https://github.com/meshtastic/python/tree/master/examples)
-
-[pdxlocations/Meshtastic-Python-Examples (github.com)](https://github.com/pdxlocations/Meshtastic-Python-Examples)
-
-**JS8Call:**
-
-For the JS8Call side of things, big thanks to Jordan Sherer for JS8Call and the [example API Python script](https://bitbucket.org/widefido/js8call/src/js8call/tcp.py)
-
-## License
-
-GNU General Public License v3.0
+</div>
