@@ -60,7 +60,11 @@ The original TC²-BBS one-letter menus and quick commands remain available along
 
 The current desktop dashboard uses Italian red and green accents, dark charcoal panels, and readable high-contrast controls. It includes **Start the Sitdown**, **Fuggedaboutit**, **The Playbook**, **The Family Business**, **The Books**, live server logs, observed node activity, and a demo mode that does not require a connected radio.
 
-> **Screenshots:** Updated release screenshots have not yet been captured and verified. We will display real screenshots here once available, rather than presenting older builds as the current interface. Demo-mode images will be labeled **Demonstration data — no live radio connection**.
+**Demonstration data — no live radio connection.** The image below is captured automatically from the actual Tkinter dashboard on an Intel macOS GitHub Actions runner. It uses sample log entries, not real radio traffic. The screenshot is generated after this workflow successfully runs on `main`.
+
+![The Sitdown BBS desktop dashboard in demo mode — demonstration data, no radio connection](docs/images/desktop-preview-demo.png)
+
+[Desktop screenshot automation](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/readme-desktop-screenshot.yml) · [Intel Mac releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases)
 
 ### 📦 Download the latest Intel Mac build
 
