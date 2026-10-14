@@ -3,7 +3,6 @@
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tkinter as tk
@@ -128,7 +127,7 @@ class SitdownApp:
             cmd += ["--host" if self.connection.get() == "tcp" else "--port", addr]
         try:
             self.proc = subprocess.Popen(cmd, cwd=str(ROOT), stdout=subprocess.PIPE,
-                                         stderr=subprocess.STDOUT, text=True)
+                                         stderr=subprocess.DEVNULL, text=True)
             self.status.set("Connecting...")
             self.log("Starting BBS server...")
         except OSError as exc:
