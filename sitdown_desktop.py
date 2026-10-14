@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import time
 import tkinter as tk
 from tkinter import messagebox, filedialog
 from sitdown_monitor import ServerSupervisor
