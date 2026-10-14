@@ -43,7 +43,7 @@ class SitdownApp:
         self.status = tk.StringVar(value="Stopped")
         self.colors = THEME
         self.root.title("THE SITDOWN BBS | North Jersey Communications Division")
-        self.root.geometry("1080x760")
+        self.root.geometry("1080x800")
         self.root.minsize(900, 670)
         self.root.configure(bg=THEME["background"])
         self.load()
@@ -76,9 +76,15 @@ class SitdownApp:
             return tk.Label(parent, text=text, font=("Helvetica", size, "bold"),
                             fg=color or c["text"], bg=c["background"])
         button = self.styled_button
-        label(self.root, "🤌 THE SITDOWN BBS", 25, c["highlight"]).pack(pady=(18, 1))
-        label(self.root, "North Jersey Communications Division", 12).pack()
-        label(self.root, "Ayyy, pull up a chair. We gotta talk.", 10).pack(pady=(2, 12))
+        header = tk.Frame(self.root, bg=c["panel"], padx=22, pady=16)
+        header.pack(fill="x", padx=18, pady=(14, 10))
+        tk.Label(header, text="THE SITDOWN BBS", font=("Helvetica", 26, "bold"),
+                 fg=c["highlight"], bg=c["panel"]).pack(anchor="w")
+        tk.Label(header, text="NORTH JERSEY  •  COMMUNICATIONS DIVISION",
+                 font=("Helvetica", 11, "bold"), fg=c["text"], bg=c["panel"]).pack(anchor="w")
+        tk.Frame(self.root, bg=c["connected"], height=4).pack(fill="x", padx=18)
+        tk.Frame(self.root, bg=c["primary"], height=4).pack(fill="x", padx=18, pady=(3, 0))
+        label(self.root, "Ayyy, pull up a chair. We gotta talk.", 12, c["highlight"]).pack(pady=(2, 12))
         panel = tk.Frame(self.root, bg=c["background"])
         panel.pack(fill="x", padx=20)
         tk.Radiobutton(panel, text="USB / Serial radio", variable=self.connection,
@@ -103,12 +109,13 @@ class SitdownApp:
         ]:
             button(actions, title, fn, color).pack(side="left", padx=(0, 8), pady=4)
         button(self.root, "Refresh USB Ports", self.list_ports, c["panel"]).pack(anchor="w", padx=20)
-        label(self.root, "Status:", 11).pack(anchor="w", padx=20)
+        label(self.root, "THE WIRE  •  LIVE STATUS", 12, c["highlight"]).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.status, bg=c["background"],
                  fg=c["connected"], font=("Helvetica", 12, "bold")).pack(anchor="w", padx=20)
-        label(self.root, "Nodes observed in received traffic (not a complete node directory)", 10).pack(anchor="w", padx=20)
+        label(self.root, "NODES OBSERVED IN RADIO TRAFFIC", 10, c["highlight"]).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.node_count, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.uptime, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
+        label(self.root, "THE BACKROOM  •  SERVER ACTIVITY", 12, c["highlight"]).pack(anchor="w", padx=20, pady=(10, 0))
         self.output = tk.Text(self.root, bg=c["panel"], fg=c["text"], insertbackground=c["text"],
                               wrap="word", relief="flat", state="disabled", height=17,
                               font=("Menlo", 12), padx=12, pady=10)
@@ -136,6 +143,8 @@ class SitdownApp:
     def log(self, message):
         self.output.configure(state="normal")
         self.output.insert("end", message + "\n")
+        if int(self.output.index("end-1c").split(".")[0]) > 2000:
+            self.output.delete("1.0", "300.0")
         self.output.see("end")
         self.output.configure(state="disabled")
 
