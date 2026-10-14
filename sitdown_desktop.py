@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """The Sitdown BBS desktop launcher. Standard-library Tkinter GUI."""
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
+from tkinter import messagebox, filedialog
+from sitdown_monitor import ServerSupervisor
 import zipfile
 
 ROOT = Path(__file__).resolve().parent
@@ -26,7 +26,12 @@ class SitdownApp:
     def __init__(self, root):
         self.root = root
         self.proc = None
-        self.started = None
+        self.supervisor = None
+        self.restart_at = None
+        self.retry_count = 0
+        self.auto_restart = tk.BooleanVar(value=False)
+        self.node_count = tk.StringVar(value='Observed nodes: 0')
+        self.uptime = tk.StringVar(value='Uptime: 0s')
         self.demo = tk.BooleanVar(value=False)
         self.connection = tk.StringVar(value="serial")
         self.address = tk.StringVar()
@@ -81,6 +86,8 @@ class SitdownApp:
                        value="tcp", bg=c["background"], fg=c["text"], selectcolor=c["panel"]).pack(side="left")
         tk.Checkbutton(panel, text="Demo mode (no radio)", variable=self.demo,
                        bg=c["background"], fg=c["highlight"], selectcolor=c["panel"]).pack(side="right")
+        tk.Checkbutton(panel, text="Restart on crash", variable=self.auto_restart,
+                       bg=c["background"], fg=c["highlight"], selectcolor=c["panel"]).pack(side="right")
         label(self.root, "Serial port (optional) or radio IP / hostname", 10).pack(anchor="w", padx=20, pady=(8, 2))
         tk.Entry(self.root, textvariable=self.address, bg=c["panel"], fg=c["text"],
                  insertbackground=c["text"], relief="flat", font=("Helvetica", 12)).pack(fill="x", padx=20, ipady=8)
@@ -94,9 +101,13 @@ class SitdownApp:
             ("The Books", self.backup, c["panel"])
         ]:
             button(actions, title, fn, color).pack(side="left", padx=(0, 7))
+        button(self.root, "Refresh USB Ports", self.list_ports, c["panel"]).pack(anchor="w", padx=20)
         label(self.root, "Status:", 11).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.status, bg=c["background"],
                  fg=c["connected"], font=("Helvetica", 12, "bold")).pack(anchor="w", padx=20)
+        label(self.root, "Nodes observed in received traffic (not a complete node directory)", 10).pack(anchor="w", padx=20)
+        tk.Label(self.root, textvariable=self.node_count, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
+        tk.Label(self.root, textvariable=self.uptime, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
         self.output = tk.Text(self.root, bg=c["panel"], fg=c["text"], insertbackground=c["text"],
                               wrap="word", relief="flat", state="disabled", height=17)
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
@@ -108,54 +119,83 @@ class SitdownApp:
         self.output.see("end")
         self.output.configure(state="disabled")
 
+    def list_ports(self):
+        try:
+            from serial.tools import list_ports
+            ports = [p.device for p in list_ports.comports()]
+            self.log("USB ports: " + (", ".join(ports) if ports else "None detected"))
+            if len(ports) == 1 and self.connection.get() == "serial":
+                self.address.set(ports[0])
+        except ImportError:
+            self.log("pyserial is missing. Install requirements.txt.")
+
     def start(self):
-        if self.proc or self.demo.get() and self.status.get() == "Demo running":
+        if self.supervisor and self.supervisor.running:
             return
         if self.demo.get():
-            self.status.set("Demo running")
-            self.log("DEMO: The Sitdown is open. No radio messages will be sent.")
+            self.status.set("Demo running — no radio")
+            self.log("DEMO: No radio messages are sent.")
+            self.retry_count = 0
             return
-        self.save()
         config = ROOT / "config.ini"
         if not config.exists():
             messagebox.showerror("Need a Guy?", "Missing config.ini. Copy example_config.ini to config.ini and configure it first.")
             return
+        addr = self.address.get().strip()
+        if self.connection.get() == "tcp" and not addr:
+            messagebox.showerror("Need a Guy?", "Enter the radio IP or hostname for TCP.")
+            return
+        self.save()
         cmd = [sys.executable, "-u", str(ROOT / "server.py"), "--config", str(config),
                "--interface-type", self.connection.get()]
-        addr = self.address.get().strip()
         if addr:
             cmd += ["--host" if self.connection.get() == "tcp" else "--port", addr]
         try:
-            self.proc = subprocess.Popen(cmd, cwd=str(ROOT), stdout=subprocess.PIPE,
-                                         stderr=subprocess.DEVNULL, text=True)
-            self.status.set("Connecting...")
-            self.log("Starting BBS server...")
+            self.supervisor = ServerSupervisor(cmd, ROOT)
+            self.supervisor.start()
+            self.status.set("Starting...")
+            self.log("Starting The Sitdown BBS...")
         except OSError as exc:
-            self.proc = None
-            messagebox.showerror("Ayy, somethin' ain't right!", str(exc))
+            self.supervisor = None
+            self.status.set("Start failed")
+            self.log(f"Start failed: {exc}")
 
     def poll(self):
-        if self.proc:
-            code = self.proc.poll()
-            if code is not None:
-                self.log(f"Server exited with code {code}. Check your radio and configuration.")
-                self.status.set("Stopped")
-                self.proc = None
-            else:
-                self.status.set("Server running (radio status unverified)")
+        monitor = self.supervisor
+        if monitor:
+            for kind, value in monitor.poll_events():
+                if kind == "log":
+                    self.log(value)
+                elif kind == "state":
+                    self.status.set(value)
+                elif kind == "node":
+                    self.node_count.set(f"Observed nodes: {len(monitor.nodes)}")
+            if monitor.running:
+                self.uptime.set(f"Uptime: {monitor.uptime_seconds()}s")
+            elif not monitor.stopping and self.restart_at is None:
+                code = monitor.process.poll() if monitor.process else "unknown"
+                self.log(f"BBS process exited ({code}).")
+                self.status.set("Disconnected / process stopped")
+                if self.auto_restart.get() and not self.demo.get():
+                    self.retry_count += 1
+                    delay = min(60, 2 ** min(self.retry_count, 6))
+                    self.restart_at = time.monotonic() + delay
+                    self.log(f"Retrying process in {delay}s (attempt {self.retry_count}).")
+                self.supervisor = None
+        if self.restart_at is not None and time.monotonic() >= self.restart_at:
+            self.restart_at = None
+            self.start()
         if self.root.winfo_exists():
-            self.root.after(1000, self.poll)
+            self.root.after(500, self.poll)
 
     def stop(self):
-        if self.proc:
-            self.proc.terminate()
-            try:
-                self.proc.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                self.proc.kill()
-                self.proc.wait()
-            self.proc = None
+        self.restart_at = None
+        self.retry_count = 0
+        if self.supervisor:
+            self.supervisor.stop()
+            self.supervisor = None
         self.status.set("Stopped")
+        self.uptime.set("Uptime: 0s")
         self.log("Fuggedaboutit. Server stopped.")
 
     def commands(self):
