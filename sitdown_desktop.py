@@ -10,6 +10,7 @@ import time
 import tkinter as tk
 from tkinter import messagebox, filedialog
 from sitdown_monitor import ServerSupervisor
+from sitdown_personality import Personality
 import zipfile
 
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
@@ -40,6 +41,9 @@ class SitdownApp:
         self.address = tk.StringVar()
         self.community = tk.StringVar(value="The Sitdown BBS")
         self.welcome = tk.StringVar(value="Ayyy, pull up a chair. We gotta talk.")
+        self.desktop_mouth = tk.StringVar(value="clean")
+        self.public_mouth = tk.StringVar(value="clean")
+        self.public_profanity = tk.BooleanVar(value=False)
         self.status = tk.StringVar(value="Stopped")
         self.colors = THEME
         self.root.title("THE SITDOWN BBS | North Jersey Communications Division")
@@ -59,6 +63,10 @@ class SitdownApp:
                 self.address.set(data.get("address", ""))
                 self.community.set(data.get("community", "The Sitdown BBS"))
                 self.welcome.set(data.get("welcome", self.welcome.get()))
+                self.desktop_mouth.set(data.get("desktop_mouth", "clean"))
+                self.public_mouth.set(data.get("public_mouth", "clean"))
+                self.public_profanity.set(data.get("public_profanity", False))
+                Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get())
             except (ValueError, OSError):
                 pass
 
@@ -66,7 +74,10 @@ class SitdownApp:
         DATA.mkdir(parents=True, exist_ok=True)
         CONFIG.write_text(json.dumps({
             "connection": self.connection.get(), "address": self.address.get(),
-            "community": self.community.get(), "welcome": self.welcome.get()
+            "community": self.community.get(), "welcome": self.welcome.get(),
+            "desktop_mouth": self.desktop_mouth.get(),
+            "public_mouth": self.public_mouth.get(),
+            "public_profanity": self.public_profanity.get()
         }, indent=2), encoding="utf-8")
         self.log("The Family Business: settings saved.")
 
@@ -259,6 +270,19 @@ class SitdownApp:
                      insertbackground=THEME["text"]).pack(padx=20)
         tk.Label(win, text="Custom welcome is saved locally; radio reply integration is pending.",
                  bg=THEME["background"], fg=THEME["highlight"]).pack(padx=20, pady=10)
+        tk.Label(win, text="JERSEY MOUTH CONTROL — DESKTOP", bg=THEME["background"], fg=THEME["highlight"]).pack(padx=20, pady=(10, 2))
+        for text, mode in [("Clean Jersey", "clean"), ("Jersey Attitude", "attitude"), ("Full Jersey Mouth", "uncensored")]:
+            tk.Radiobutton(win, text=text, variable=self.desktop_mouth, value=mode,
+                           bg=THEME["background"], fg=THEME["text"], selectcolor=THEME["panel"]).pack(anchor="w", padx=20)
+        tk.Label(win, text="PUBLIC RADIO MESSAGE STYLE (future integration)", bg=THEME["background"], fg=THEME["highlight"]).pack(padx=20, pady=(10, 2))
+        for text, mode in [("Clean Jersey", "clean"), ("Jersey Attitude", "attitude"), ("Full Jersey Mouth", "uncensored")]:
+            tk.Radiobutton(win, text=text, variable=self.public_mouth, value=mode,
+                           bg=THEME["background"], fg=THEME["text"], selectcolor=THEME["panel"]).pack(anchor="w", padx=20)
+        tk.Checkbutton(win, text="I explicitly allow profanity in future public radio broadcasts",
+                       variable=self.public_profanity, bg=THEME["background"], fg=THEME["text"],
+                       selectcolor=THEME["panel"]).pack(anchor="w", padx=20, pady=6)
+        tk.Label(win, text="Preferences are local only; BBS radio integration is not yet active.",
+                 bg=THEME["background"], fg=THEME["highlight"]).pack(padx=20)
         self.styled_button(win, "Save", self.save, THEME["connected"]).pack(pady=12)
 
     def backup(self):
