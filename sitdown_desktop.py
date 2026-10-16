@@ -80,6 +80,7 @@ class SitdownApp:
             "public_profanity": self.public_profanity.get()
         }, indent=2), encoding="utf-8")
         self.log("The Family Business: settings saved.")
+        self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
 
     def build(self):
         c = self.colors
@@ -131,7 +132,8 @@ class SitdownApp:
                               wrap="word", relief="flat", state="disabled", height=17,
                               font=("Menlo", 12), padx=12, pady=10)
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
-        self.log("Ready, pal. Pick a radio, or check Demo mode.")
+        self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
+        self.log("Pick a radio, or check Demo mode.")
 
     def styled_button(self, parent, text, command, color=None):
         # macOS Aqua ignores custom backgrounds on native Tk buttons,
