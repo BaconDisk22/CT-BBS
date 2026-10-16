@@ -127,7 +127,12 @@ class SitdownApp:
         label(self.root, "NODES OBSERVED IN RADIO TRAFFIC", 10, c["highlight"]).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.node_count, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.uptime, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
-        label(self.root, "THE BACKROOM  •  SERVER ACTIVITY", 12, c["highlight"]).pack(anchor="w", padx=20, pady=(10, 0))
+        log_header = tk.Frame(self.root, bg=c["background"])
+        log_header.pack(fill="x", padx=20, pady=(10, 0))
+        label(log_header, "THE BACKROOM  •  SERVER ACTIVITY", 12, c["highlight"]).pack(side="left")
+        button(log_header, "Save Log", self.export_log, c["panel"]).pack(side="right", padx=(8, 0))
+        button(log_header, "Clear Log", self.clear_log, c["panel"]).pack(side="right")
+
         self.output = tk.Text(self.root, bg=c["panel"], fg=c["text"], insertbackground=c["text"],
                               wrap="word", relief="flat", state="disabled", height=17,
                               font=("Menlo", 12), padx=12, pady=10)
@@ -160,6 +165,29 @@ class SitdownApp:
             self.output.delete("1.0", "300.0")
         self.output.see("end")
         self.output.configure(state="disabled")
+
+    def clear_log(self):
+        """Clear the visible log only; the running server is unaffected."""
+        self.output.configure(state="normal")
+        self.output.delete("1.0", "end")
+        self.output.configure(state="disabled")
+        self.log("The Backroom: visible log cleared.")
+
+    def export_log(self):
+        """Save a snapshot of the visible log without stopping the server."""
+        destination = filedialog.asksaveasfilename(
+            parent=self.root, title="Save The Backroom log",
+            defaultextension=".txt", initialfile="sitdown-bbs-log.txt",
+            filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        if not destination:
+            return
+        try:
+            snapshot = self.output.get("1.0", "end-1c")
+            Path(destination).write_text(snapshot + "\\n", encoding="utf-8")
+        except OSError as exc:
+            messagebox.showerror("Couldn't save log", str(exc))
+            return
+        self.log("The Backroom: log exported.")
 
     def list_ports(self):
         try:
