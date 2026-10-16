@@ -11,7 +11,7 @@ class TestPersonality(unittest.TestCase):
 
     def test_public_requires_explicit_opt_in(self):
         personality = Personality(public_mode="uncensored", allow_public_profanity=True)
-        self.assertEqual(personality.message("welcome", public=True), personality.message("welcome", public=False) if False else "Ayyy, pull up a chair. Don't bust my balls, we gotta talk.")
+        self.assertEqual(personality.message("welcome", public=True), "Ayyy, pull up a chair. Don't bust my balls, we gotta talk.")
 
     def test_invalid_mode(self):
         with self.assertRaises(ValueError):
