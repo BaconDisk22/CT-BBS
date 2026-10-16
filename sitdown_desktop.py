@@ -63,14 +63,22 @@ class SitdownApp:
                 self.address.set(data.get("address", ""))
                 self.community.set(data.get("community", "The Sitdown BBS"))
                 self.welcome.set(data.get("welcome", self.welcome.get()))
-                self.desktop_mouth.set(data.get("desktop_mouth", "clean"))
-                self.public_mouth.set(data.get("public_mouth", "clean"))
-                self.public_profanity.set(data.get("public_profanity", False))
-                Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get())
+                desktop_mode = data.get("desktop_mouth", "clean")
+                public_mode = data.get("public_mouth", "clean")
+                enabled = data.get("public_profanity", False) is True
+                Personality(desktop_mode, public_mode, enabled)
+                self.desktop_mouth.set(desktop_mode)
+                self.public_mouth.set(public_mode)
+                self.public_profanity.set(enabled)
             except (ValueError, OSError):
                 pass
 
     def save(self):
+        try:
+            Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get())
+        except ValueError as exc:
+            messagebox.showerror("Invalid Jersey Mouth setting", str(exc))
+            return
         DATA.mkdir(parents=True, exist_ok=True)
         CONFIG.write_text(json.dumps({
             "connection": self.connection.get(), "address": self.address.get(),
@@ -285,6 +293,20 @@ class SitdownApp:
                        selectcolor=THEME["panel"]).pack(anchor="w", padx=20, pady=6)
         tk.Label(win, text="Preferences are local only; BBS radio integration is not yet active.",
                  bg=THEME["background"], fg=THEME["highlight"]).pack(padx=20)
+        preview = tk.StringVar()
+        def refresh_preview(*_args):
+            try:
+                personality = Personality(self.desktop_mouth.get(), self.public_mouth.get(),
+                                          self.public_profanity.get())
+                preview.set("Desktop: " + personality.message("welcome") +
+                            "\\nPublic (not transmitted): " + personality.message("welcome", public=True))
+            except ValueError:
+                preview.set("Invalid personality settings")
+        for variable in (self.desktop_mouth, self.public_mouth, self.public_profanity):
+            variable.trace_add("write", refresh_preview)
+        refresh_preview()
+        tk.Label(win, textvariable=preview, justify="left", wraplength=490,
+                 bg=THEME["panel"], fg=THEME["text"], padx=12, pady=10).pack(fill="x", padx=20, pady=10)
         self.styled_button(win, "Save", self.save, THEME["connected"]).pack(pady=12)
 
     def backup(self):
