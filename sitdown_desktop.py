@@ -202,7 +202,7 @@ class SitdownApp:
         tk.Label(win, text="WHO'S WHO IN THE FAMILY", fg=THEME["highlight"],
                  bg=THEME["background"], font=("Helvetica", 16, "bold")).pack(padx=18, pady=12)
         nodes = sorted(str(node) for node in (self.supervisor.nodes if self.supervisor else []))
-        display = "\\n".join(nodes) if nodes else "No nodes observed in this session."
+        display = "\n".join(nodes) if nodes else "No nodes observed in this session."
         tk.Label(win, text=display, fg=THEME["text"], bg=THEME["background"],
                  justify="left", wraplength=480).pack(padx=18, pady=(0, 18))
 
