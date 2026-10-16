@@ -32,11 +32,30 @@ Think old-school bulletin boards with a North Jersey attitude: diner coffee, Sun
 | 🗺️ **What Exit?** | Channel directory |
 | 📊 **Who's Connected?** | Server utilities and statistics |
 | 🔮 **Jersey Wisdom** | Random fortunes |
-| 🖥️ **The Sitdown Desktop** | Experimental GUI launcher for macOS and other Tkinter platforms |
-| 🧪 **Demo Mode** | Explore the desktop controls without a connected radio |
+| 🖥️ **The Sitdown Desktop** | Tkinter launcher with server status, searchable logs, and observed-node viewer |
+| 🧪 **Demo Mode** | Explore desktop controls without connecting or transmitting over radio |
 | 📦 **The Books** | Create a ZIP backup of available local settings and database files |
 
 **Development note:** The desktop dashboard includes live server logs, process monitoring, USB port discovery, optional process restart, and a radio-free demo mode. Intel Mac build and release workflows are configured; check [Releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases) for a successfully published build. Real radio connection verification, restore, and automated screenshot publication still require further validation.
+
+## 🕵️ The Backroom — dashboard tools
+
+The desktop launcher includes a few handy tools for keeping tabs on the family business:
+
+| Control | What it does |
+| --- | --- |
+| **Find in Log / Find Next** | Search the visible server activity log and jump to matching entries |
+| **Save Log** | Export the visible activity log as a UTF-8 text file for troubleshooting |
+| **Clear Log** | Clear the visible log without stopping the BBS process |
+| **Nodes / Who's Who** | Open a list of node IDs observed during the current session |
+| **Refresh USB Ports** | List detected serial devices and fill in the port when exactly one is available |
+| **Restart on crash** | Optionally restart the server process after an unexpected exit |
+
+**What's not included yet:** The node viewer shows observed IDs, not a live network directory. Search operates on the visible log only. The dashboard's personality controls are local preferences; they do not yet change radio replies. Radio connectivity and Intel Mac packaging still need validation on actual hardware.
+
+### Jersey Mouth Control
+
+Under **The Family Business**, choose **Clean Jersey**, **Jersey Attitude**, or **Full Jersey Mouth** for desktop-generated greetings. Public-radio style is a separate preference, with explicit profanity opt-in. These controls are **not yet connected to the BBS radio reply path**, and they do not rewrite messages from users or emergency/technical notices.
 
 ## 🤌 The Playbook — radio commands
 
@@ -58,7 +77,7 @@ The original TC²-BBS one-letter menus and quick commands remain available along
 
 **THE SITDOWN BBS — North Jersey Communications Division**
 
-The current desktop dashboard uses Italian red and green accents, dark charcoal panels, and readable high-contrast controls. It includes **Start the Sitdown**, **Fuggedaboutit**, **The Playbook**, **The Family Business**, **The Books**, live server logs, observed node activity, and a demo mode that does not require a connected radio.
+The current desktop dashboard uses Italian red and green accents, dark charcoal panels, and readable high-contrast controls. It includes **Start the Sitdown**, **Fuggedaboutit**, **The Playbook**, **The Family Business**, **The Books**, live searchable server logs, log export/clear controls, an observed-node viewer, and a demo mode that does not require a connected radio.
 
 **Demonstration data — no live radio connection.** The image below is captured automatically from the actual Tkinter dashboard on an Intel macOS GitHub Actions runner. It uses sample log entries, not real radio traffic. The screenshot is generated after this workflow successfully runs on `main`.
 
