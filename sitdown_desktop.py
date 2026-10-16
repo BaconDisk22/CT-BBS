@@ -127,7 +127,21 @@ class SitdownApp:
         label(self.root, "NODES OBSERVED IN RADIO TRAFFIC", 10, c["highlight"]).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.node_count, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
         tk.Label(self.root, textvariable=self.uptime, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
-        label(self.root, "THE BACKROOM  •  SERVER ACTIVITY", 12, c["highlight"]).pack(anchor="w", padx=20, pady=(10, 0))
+        log_header = tk.Frame(self.root, bg=c["background"])
+        log_header.pack(fill="x", padx=20, pady=(10, 0))
+        label(log_header, "THE BACKROOM  •  SERVER ACTIVITY", 12, c["highlight"]).pack(side="left")
+        button(log_header, "Save Log", self.export_log, c["panel"]).pack(side="right", padx=(8, 0))
+        button(log_header, "Clear Log", self.clear_log, c["panel"]).pack(side="right")
+        button(log_header, "Nodes", self.show_nodes, c["panel"]).pack(side="right", padx=(0, 8))
+        self.log_query = tk.StringVar()
+        search_row = tk.Frame(self.root, bg=c["background"])
+        search_row.pack(fill="x", padx=20, pady=(8, 0))
+        tk.Label(search_row, text="Find in log:", bg=c["background"], fg=c["text"]).pack(side="left")
+        tk.Entry(search_row, textvariable=self.log_query, bg=c["panel"], fg=c["text"],
+                 insertbackground=c["text"], relief="flat").pack(side="left", fill="x", expand=True, padx=8)
+        button(search_row, "Find Next", self.find_log, c["panel"]).pack(side="right")
+
+
         self.output = tk.Text(self.root, bg=c["panel"], fg=c["text"], insertbackground=c["text"],
                               wrap="word", relief="flat", state="disabled", height=17,
                               font=("Menlo", 12), padx=12, pady=10)
@@ -160,6 +174,60 @@ class SitdownApp:
             self.output.delete("1.0", "300.0")
         self.output.see("end")
         self.output.configure(state="disabled")
+
+    def find_log(self):
+        """Find the next match without altering or filtering server output."""
+        query = self.log_query.get().strip()
+        if not query:
+            return
+        self.output.tag_remove("search_hit", "1.0", "end")
+        start = self.output.index("insert + 1c")
+        match = self.output.search(query, start, stopindex="end", nocase=True)
+        if not match:
+            match = self.output.search(query, "1.0", stopindex="end", nocase=True)
+        if match:
+            end = self.output.index(f"{match} + {len(query)}c")
+            self.output.tag_add("search_hit", match, end)
+            self.output.tag_configure("search_hit", background=THEME["highlight"], foreground=THEME["background"])
+            self.output.mark_set("insert", match)
+            self.output.see(match)
+        else:
+            messagebox.showinfo("The Backroom", "No matching log entry found.")
+
+    def show_nodes(self):
+        """Display observed node IDs only; no network lookup or radio traffic."""
+        win = tk.Toplevel(self.root)
+        win.title("Who's Who — Observed Nodes")
+        win.configure(bg=THEME["background"])
+        tk.Label(win, text="WHO'S WHO IN THE FAMILY", fg=THEME["highlight"],
+                 bg=THEME["background"], font=("Helvetica", 16, "bold")).pack(padx=18, pady=12)
+        nodes = sorted(str(node) for node in (self.supervisor.nodes if self.supervisor else []))
+        display = "\n".join(nodes) if nodes else "No nodes observed in this session."
+        tk.Label(win, text=display, fg=THEME["text"], bg=THEME["background"],
+                 justify="left", wraplength=480).pack(padx=18, pady=(0, 18))
+
+    def clear_log(self):
+        """Clear the visible log only; the running server is unaffected."""
+        self.output.configure(state="normal")
+        self.output.delete("1.0", "end")
+        self.output.configure(state="disabled")
+        self.log("The Backroom: visible log cleared.")
+
+    def export_log(self):
+        """Save a snapshot of the visible log without stopping the server."""
+        destination = filedialog.asksaveasfilename(
+            parent=self.root, title="Save The Backroom log",
+            defaultextension=".txt", initialfile="sitdown-bbs-log.txt",
+            filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        if not destination:
+            return
+        try:
+            snapshot = self.output.get("1.0", "end-1c")
+            Path(destination).write_text(snapshot + "\n", encoding="utf-8")
+        except OSError as exc:
+            messagebox.showerror("Couldn't save log", str(exc))
+            return
+        self.log("The Backroom: log exported.")
 
     def list_ports(self):
         try:
