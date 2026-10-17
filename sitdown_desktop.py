@@ -118,37 +118,75 @@ class SitdownApp:
                 side="left", padx=3)
         tk.Frame(self.root, bg=c["connected"], height=4).pack(fill="x", padx=18)
         tk.Frame(self.root, bg=c["primary"], height=4).pack(fill="x", padx=18, pady=(3, 0))
-        label(self.root, "Ayyy, pull up a chair. We gotta talk.", 12, c["highlight"]).pack(pady=(2, 12))
-        panel = tk.Frame(self.root, bg=c["background"])
-        panel.pack(fill="x", padx=20)
-        tk.Radiobutton(panel, text="USB / Serial radio", variable=self.connection,
-                       value="serial", bg=c["background"], fg=c["text"], selectcolor=c["panel"]).pack(side="left")
-        tk.Radiobutton(panel, text="Network radio", variable=self.connection,
-                       value="tcp", bg=c["background"], fg=c["text"], selectcolor=c["panel"]).pack(side="left")
-        tk.Checkbutton(panel, text="Demo mode (no radio)", variable=self.demo,
-                       bg=c["background"], fg=c["highlight"], selectcolor=c["panel"]).pack(side="right")
-        tk.Checkbutton(panel, text="Restart on crash", variable=self.auto_restart,
-                       bg=c["background"], fg=c["highlight"], selectcolor=c["panel"]).pack(side="right")
-        label(self.root, "Serial port (optional) or radio IP / hostname", 10).pack(anchor="w", padx=20, pady=(8, 2))
-        tk.Entry(self.root, textvariable=self.address, bg=c["panel"], fg=c["text"],
-                 insertbackground=c["text"], relief="flat", font=("Helvetica", 12)).pack(fill="x", padx=20, ipady=8)
-        actions = tk.Frame(self.root, bg=c["background"])
-        actions.pack(fill="x", padx=20, pady=12)
-        for title, fn, color in [
-            ("Start the Sitdown", self.start, c["connected"]),
-            ("Fuggedaboutit (Stop)", self.stop, c["primary"]),
-            ("The Playbook", self.commands, c["panel"]),
-            ("The Family Business", self.settings, c["panel"]),
-            ("The Books", self.backup, c["panel"])
-        ]:
-            button(actions, title, fn, color).pack(side="left", padx=(0, 8), pady=4)
-        button(self.root, "Refresh USB Ports", self.list_ports, c["panel"]).pack(anchor="w", padx=20)
-        label(self.root, "THE WIRE  •  LIVE STATUS", 12, c["highlight"]).pack(anchor="w", padx=20)
-        tk.Label(self.root, textvariable=self.status, bg=c["background"],
-                 fg=c["connected"], font=("Helvetica", 12, "bold")).pack(anchor="w", padx=20)
-        label(self.root, "NODES OBSERVED IN RADIO TRAFFIC", 10, c["highlight"]).pack(anchor="w", padx=20)
-        tk.Label(self.root, textvariable=self.node_count, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
-        tk.Label(self.root, textvariable=self.uptime, bg=c["background"], fg=c["text"]).pack(anchor="w", padx=20)
+        label(self.root, "Ayyy, pull up a chair. We gotta talk.", 12, c["highlight"]).pack(pady=(2, 10))
+        cards = tk.Frame(self.root, bg=c["background"])
+        cards.pack(fill="x", padx=18, pady=(0, 12))
+        for column in range(3):
+            cards.grid_columnconfigure(column, weight=1, uniform="jersey")
+
+        def card(column, title):
+            frame = tk.Frame(cards, bg=c["panel"], padx=14, pady=12,
+                             highlightbackground="#4A4A4A", highlightthickness=1)
+            frame.grid(row=0, column=column, sticky="nsew", padx=5)
+            tk.Label(frame, text=title, bg=c["panel"], fg=c["highlight"],
+                     font=("Helvetica", 13, "bold")).pack(anchor="w", pady=(0, 10))
+            return frame
+
+        radio = card(0, "01  •  RADIO CONNECTION")
+        tk.Radiobutton(radio, text="USB / Serial", variable=self.connection, value="serial",
+                       bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w")
+        tk.Radiobutton(radio, text="TCP / Network", variable=self.connection, value="tcp",
+                       bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w")
+        tk.Label(radio, text="Device path or radio IP", bg=c["panel"], fg=c["text"]).pack(anchor="w", pady=(10, 2))
+        tk.Entry(radio, textvariable=self.address, bg=c["background"], fg=c["text"],
+                 insertbackground=c["text"], relief="flat").pack(fill="x", ipady=7)
+        self.styled_button(radio, "Find USB Ports", self.list_ports, c["background"]).pack(
+            anchor="w", pady=(10, 0))
+        tk.Label(radio, text="Radio link is not verified by process status.",
+                 bg=c["panel"], fg=c["highlight"], wraplength=275,
+                 justify="left").pack(anchor="w", pady=(10, 0))
+
+        server = card(1, "02  •  BBS SERVER")
+        self.status_row = tk.Frame(server, bg=c["panel"])
+        self.status_row.pack(fill="x", pady=(0, 8))
+        self.status_dot = tk.Label(self.status_row, text="●", bg=c["panel"],
+                                   fg=c["primary"], font=("Helvetica", 16, "bold"))
+        self.status_dot.pack(side="left", padx=(0, 6))
+        tk.Label(self.status_row, textvariable=self.status, bg=c["panel"],
+                 fg=c["text"], wraplength=230, justify="left").pack(side="left")
+        self.status.trace_add("write", self.refresh_status_indicator)
+        self.refresh_status_indicator()
+        tk.Label(server, textvariable=self.node_count, bg=c["panel"], fg=c["text"]).pack(anchor="w")
+        tk.Label(server, textvariable=self.uptime, bg=c["panel"], fg=c["text"]).pack(anchor="w", pady=(4, 10))
+        self.styled_button(server, "START THE SITDOWN", self.start, c["connected"]).pack(fill="x", pady=3)
+        self.styled_button(server, "STOP SERVER", self.stop, c["primary"]).pack(fill="x", pady=3)
+        tk.Checkbutton(server, text="Demo mode (no radio)", variable=self.demo,
+                       bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w", pady=(8, 0))
+        tk.Checkbutton(server, text="Restart on crash", variable=self.auto_restart,
+                       bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w")
+
+        personality = card(2, "03  •  JERSEY PERSONALITY")
+        tk.Label(personality, text="Desktop greeting style", bg=c["panel"],
+                 fg=c["text"]).pack(anchor="w")
+        for title, mode in (("Clean Jersey", "clean"), ("Jersey Attitude", "attitude"),
+                            ("Full Jersey Mouth", "uncensored")):
+            tk.Radiobutton(personality, text=title, variable=self.desktop_mouth, value=mode,
+                           bg=c["panel"], fg=c["text"],
+                           selectcolor=c["background"]).pack(anchor="w")
+        self.styled_button(personality, "SAVE SETTINGS", self.save, c["connected"]).pack(
+            fill="x", pady=(12, 4))
+        self.styled_button(personality, "THE FAMILY BUSINESS", self.settings,
+                           c["background"]).pack(fill="x", pady=4)
+        tk.Label(personality, text="Public radio style is configured separately. "
+                 "These options do not change radio replies yet.",
+                 bg=c["panel"], fg=c["highlight"], wraplength=285,
+                 justify="left").pack(anchor="w", pady=(8, 0))
+
+        tools = tk.Frame(self.root, bg=c["background"])
+        tools.pack(fill="x", padx=23, pady=(0, 4))
+        for title, action in (("THE PLAYBOOK", self.commands),
+                              ("THE BOOKS", self.backup), ("WHO'S WHO", self.show_nodes)):
+            self.styled_button(tools, title, action, c["panel"]).pack(side="left", padx=(0, 8))
         log_header = tk.Frame(self.root, bg=c["background"])
         log_header.pack(fill="x", padx=20, pady=(10, 0))
         label(log_header, "THE BACKROOM  •  SERVER ACTIVITY", 12, c["highlight"]).pack(side="left")
@@ -170,6 +208,17 @@ class SitdownApp:
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
         self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
         self.log("Pick a radio, or check Demo mode.")
+
+    def refresh_status_indicator(self, *_args):
+        """Color denotes BBS process state, not a verified radio link."""
+        state = self.status.get().lower()
+        if "demo" in state or "starting" in state or "retry" in state:
+            color = THEME["highlight"]
+        elif "running" in state or "initialized" in state:
+            color = THEME["connected"]
+        else:
+            color = THEME["primary"]
+        self.status_dot.configure(fg=color)
 
     def show_home(self):
         """Home is the main live dashboard."""
