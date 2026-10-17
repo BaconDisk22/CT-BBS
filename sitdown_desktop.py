@@ -178,7 +178,7 @@ class SitdownApp:
     def show_command_info(self, shortcut):
         """Show the actual radio command; do not imply desktop mail is implemented."""
         messagebox.showinfo("The Sitdown BBS — Radio Commands",
-                            f"Send {shortcut} as a direct message to your BBS node.\\n"
+                            f"Send {shortcut} as a direct message to your BBS node.\n"
                             "This desktop build does not provide a direct message composer.")
 
     def show_radio(self):
@@ -191,9 +191,9 @@ class SitdownApp:
 
     def show_about(self):
         messagebox.showinfo("About The Sitdown BBS",
-                            "THE SITDOWN BBS — North Jersey Communications Division\\n"
-                            "A Jersey-themed Meshtastic BBS based on TC²-BBS.\\n"
-                            "Built for the mesh. Raised in Jersey.\\n\\n"
+                            "THE SITDOWN BBS — North Jersey Communications Division\n"
+                            "A Jersey-themed Meshtastic BBS based on TC²-BBS.\n"
+                            "Built for the mesh. Raised in Jersey.\\n\n"
                             "Connection details shown here come from the running app, "
                             "not from promotional demo artwork.")
 
