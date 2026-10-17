@@ -36,7 +36,7 @@ for i,color in enumerate(("#008C45","#F5F5F0","#C62828")):
     d.rectangle((95+i*280,744,95+(i+1)*280,780),fill=color)
 # Big recognizable BBS monogram with contrast for Dock sizes.
 try:
-    font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 210)
+    font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 110)
     small = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 60)
 except OSError:
     font = ImageFont.load_default()
