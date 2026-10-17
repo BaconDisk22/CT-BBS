@@ -38,6 +38,16 @@ jobs:
         run: |
           python -m compileall -q sitdown_desktop.py sitdown_monitor.py
           python -m unittest discover -s tests -p 'test_sitdown_*.py'
+      - name: Check desktop layout and keyboard navigation
+        run: SITDOWN_UI_TESTS=1 python -m unittest discover -s tests -p 'test_sitdown_desktop.py'
+      - name: Capture desktop demo preview
+        run: python scripts/capture_desktop_preview.py
+      - name: Upload desktop demo preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitdown-pr-desktop-preview
+          path: docs/images/desktop-preview-demo.png
+          if-no-files-found: error
       - name: Generate Jersey app icon
         run: |
           python scripts/make_icon.py
