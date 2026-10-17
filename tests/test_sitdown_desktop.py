@@ -83,7 +83,7 @@ class DesktopWindowTests(unittest.TestCase):
                         self.assertLessEqual(control.winfo_x() + control.winfo_width(), nav.winfo_width())
                         self.assertLessEqual(control.winfo_y() + control.winfo_height(), nav.winfo_height())
         for title in ("SETTINGS", "ABOUT"):
-            control = next(c for c in self.app.nav_buttons if c.cget("text") == title)
+            control = next(c for c in self.app.nav_buttons if c.cget("text").split()[-1] == title)
             control.event_generate("<Button-1>")
             self.root.update()
             windows = [w for w in self.root.winfo_children() if isinstance(w, tk.Toplevel)]
