@@ -226,6 +226,17 @@ class SitdownApp:
                               font=("Menlo", 11), padx=16, pady=12,
                               highlightbackground="#24404A", highlightthickness=1)
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
+        # Read-only footer: process status is not proof of a live radio link.
+        footer = tk.Frame(self.root, bg=c["panel"], padx=14, pady=7,
+                          highlightbackground="#24404A", highlightthickness=1)
+        footer.pack(fill="x", padx=20, pady=(0, 12))
+        tk.Label(footer, text="THE SITDOWN BBS  •  NORTH JERSEY",
+                 bg=c["panel"], fg=c["highlight"],
+                 font=("Helvetica", 10, "bold")).pack(side="left")
+        tk.Label(footer, textvariable=self.status, bg=c["panel"], fg=c["text"],
+                 font=("Helvetica", 10)).pack(side="right", padx=(14, 0))
+        tk.Label(footer, text="SERVER PROCESS:", bg=c["panel"], fg=c["highlight"],
+                 font=("Helvetica", 10, "bold")).pack(side="right")
         self.output.tag_configure("event_error", foreground="#FF8B85")
         self.output.tag_configure("event_ready", foreground="#82D9A0")
         self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
