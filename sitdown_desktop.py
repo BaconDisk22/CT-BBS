@@ -47,7 +47,7 @@ class SitdownApp:
         self.status = tk.StringVar(value="Stopped")
         self.colors = THEME
         self.root.title("THE SITDOWN BBS | North Jersey Communications Division")
-        self.root.geometry("1240x860")
+        self.root.geometry("1280x900")
         self.root.minsize(1120, 740)
         self.root.configure(bg=THEME["background"])
         self.load()
@@ -142,7 +142,13 @@ class SitdownApp:
                  insertbackground=c["text"], relief="flat").pack(fill="x", ipady=7)
         self.styled_button(radio, "Find USB Ports", self.list_ports, c["background"]).pack(
             anchor="w", pady=(10, 0))
-        tk.Label(radio, text="Radio link is not verified by process status.",
+        self.connection_summary = tk.StringVar()
+        tk.Label(radio, textvariable=self.connection_summary, bg=c["panel"],
+                 fg=c["text"], justify="left", wraplength=280).pack(anchor="w", pady=(8, 0))
+        self.connection.trace_add("write", self.refresh_connection_summary)
+        self.address.trace_add("write", self.refresh_connection_summary)
+        self.refresh_connection_summary()
+        tk.Label(radio, text="Process status does not confirm a radio link.",
                  bg=c["panel"], fg=c["highlight"], wraplength=275,
                  justify="left").pack(anchor="w", pady=(10, 0))
 
@@ -202,12 +208,20 @@ class SitdownApp:
         button(search_row, "Find Next", self.find_log, c["panel"]).pack(side="right")
 
 
-        self.output = tk.Text(self.root, bg=c["panel"], fg=c["text"], insertbackground=c["text"],
+        self.output = tk.Text(self.root, bg="#151B20", fg=c["text"], insertbackground=c["text"],
                               wrap="word", relief="flat", state="disabled", height=17,
                               font=("Menlo", 12), padx=12, pady=10)
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
+        self.output.tag_configure("event_error", foreground="#FF8B85")
+        self.output.tag_configure("event_ready", foreground="#82D9A0")
         self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
         self.log("Pick a radio, or check Demo mode.")
+
+    def refresh_connection_summary(self, *_args):
+        """Display configured endpoint without claiming it is connected."""
+        kind = "TCP / Network" if self.connection.get() == "tcp" else "USB / Serial"
+        endpoint = self.address.get().strip() or "Not specified (auto/default)"
+        self.connection_summary.set(f"Configured: {kind}\\nEndpoint: {endpoint}")
 
     def refresh_status_indicator(self, *_args):
         """Color denotes BBS process state, not a verified radio link."""
@@ -266,7 +280,11 @@ class SitdownApp:
 
     def log(self, message):
         self.output.configure(state="normal")
-        self.output.insert("end", message + "\n")
+        tag = ("event_error" if any(word in message.lower() for word in
+                ("error", "failed", "traceback")) else
+               "event_ready" if any(word in message.lower() for word in
+                ("initialized", "ready", "running")) else None)
+        self.output.insert("end", message + "\n", (tag,) if tag else ())
         if int(self.output.index("end-1c").split(".")[0]) > 2000:
             self.output.delete("1.0", "300.0")
         self.output.see("end")
