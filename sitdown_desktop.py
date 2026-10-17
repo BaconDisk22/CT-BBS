@@ -109,17 +109,19 @@ class SitdownApp:
         self.navigation = navigation
         self.nav_buttons = []
         for title, action in [
-            ("HOME", self.show_home),
-            ("BBS", self.commands),
-            ("MESSAGES", lambda: self.show_command_info("/mail")),
-            ("BOARDS", lambda: self.show_command_info("/boards")),
-            ("RADIO", self.show_radio),
-            ("NODES", self.show_nodes),
-            ("SETTINGS", self.settings),
-            ("ABOUT", self.show_about),
+            ("⌂  HOME", self.show_home),
+            ("▣  BBS", self.commands),
+            ("✉  MESSAGES", lambda: self.show_command_info("/mail")),
+            ("▤  BOARDS", lambda: self.show_command_info("/boards")),
+            ("◉  RADIO", self.show_radio),
+            ("◎  NODES", self.show_nodes),
+            ("⚙  SETTINGS", self.settings),
+            ("ⓘ  ABOUT", self.show_about),
         ]:
             control = self.styled_button(
-                navigation, title, action, c["primary"] if title == "HOME" else c["background"])
+                navigation, title, action,
+                c["primary"] if "HOME" in title else c["background"],
+                compact=True)
             self.nav_buttons.append(control)
         navigation.bind("<Configure>", self.layout_navigation)
         tk.Frame(self.root, bg=c["connected"], height=4).pack(fill="x", padx=18)
@@ -353,13 +355,14 @@ class SitdownApp:
                             "Connection details shown here come from the running app, "
                             "not from promotional demo artwork.")
 
-    def styled_button(self, parent, text, command, color=None):
+    def styled_button(self, parent, text, command, color=None, compact=False):
         # macOS Aqua ignores custom backgrounds on native Tk buttons,
         # producing white-on-white labels. Use a keyboard-accessible Label.
         background = color or self.colors["primary"]
         control = tk.Label(parent, text=text, bg=background, fg="#FFFFFF",
-                           padx=13, pady=10, cursor="hand2",
-                           font=("Helvetica", 12, "bold"), relief="flat",
+                           padx=8 if compact else 13, pady=7 if compact else 10,
+                           cursor="hand2",
+                           font=("Helvetica", 10 if compact else 12, "bold"), relief="flat",
                            highlightthickness=2, highlightbackground=self.colors["background"],
                            takefocus=True)
         control.bind("<Button-1>", lambda _event: command())
