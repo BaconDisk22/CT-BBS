@@ -47,8 +47,8 @@ class SitdownApp:
         self.status = tk.StringVar(value="Stopped")
         self.colors = THEME
         self.root.title("THE SITDOWN BBS | North Jersey Communications Division")
-        self.root.geometry("1080x800")
-        self.root.minsize(900, 670)
+        self.root.geometry("1240x860")
+        self.root.minsize(1120, 740)
         self.root.configure(bg=THEME["background"])
         self.load()
         self.build()
@@ -99,9 +99,23 @@ class SitdownApp:
         header = tk.Frame(self.root, bg=c["panel"], padx=22, pady=16)
         header.pack(fill="x", padx=18, pady=(14, 10))
         tk.Label(header, text="THE SITDOWN BBS", font=("Helvetica", 26, "bold"),
-                 fg=c["highlight"], bg=c["panel"]).pack(anchor="w")
+                 fg=c["text"], bg=c["panel"]).pack(anchor="w")
         tk.Label(header, text="NORTH JERSEY  •  COMMUNICATIONS DIVISION",
                  font=("Helvetica", 11, "bold"), fg=c["text"], bg=c["panel"]).pack(anchor="w")
+        navigation = tk.Frame(self.root, bg=c["panel"], pady=7)
+        navigation.pack(fill="x", padx=18, pady=(0, 7))
+        for title, action in [
+            ("HOME", self.show_home),
+            ("BBS", self.commands),
+            ("MESSAGES", lambda: self.show_command_info("/mail")),
+            ("BOARDS", lambda: self.show_command_info("/boards")),
+            ("RADIO", self.show_radio),
+            ("NODES", self.show_nodes),
+            ("SETTINGS", self.settings),
+            ("ABOUT", self.show_about),
+        ]:
+            self.styled_button(navigation, title, action, c["primary"] if title == "HOME" else c["background"]).pack(
+                side="left", padx=3)
         tk.Frame(self.root, bg=c["connected"], height=4).pack(fill="x", padx=18)
         tk.Frame(self.root, bg=c["primary"], height=4).pack(fill="x", padx=18, pady=(3, 0))
         label(self.root, "Ayyy, pull up a chair. We gotta talk.", 12, c["highlight"]).pack(pady=(2, 12))
@@ -156,6 +170,32 @@ class SitdownApp:
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
         self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
         self.log("Pick a radio, or check Demo mode.")
+
+    def show_home(self):
+        """Home is the main live dashboard."""
+        self.log("HOME: Dashboard is already open.")
+
+    def show_command_info(self, shortcut):
+        """Show the actual radio command; do not imply desktop mail is implemented."""
+        messagebox.showinfo("The Sitdown BBS — Radio Commands",
+                            f"Send {shortcut} as a direct message to your BBS node.\n"
+                            "This desktop build does not provide a direct message composer.")
+
+    def show_radio(self):
+        """Bring attention to real radio connection settings on the dashboard."""
+        messagebox.showinfo("Radio Connection",
+                            "Choose USB / Serial or Network radio on the dashboard, "
+                            "then enter the device path or radio IP address. "
+                            "Start the Sitdown to launch the configured BBS. "
+                            "A running server process does not prove a radio link.")
+
+    def show_about(self):
+        messagebox.showinfo("About The Sitdown BBS",
+                            "THE SITDOWN BBS — North Jersey Communications Division\n"
+                            "A Jersey-themed Meshtastic BBS based on TC²-BBS.\n"
+                            "Built for the mesh. Raised in Jersey.\\n\n"
+                            "Connection details shown here come from the running app, "
+                            "not from promotional demo artwork.")
 
     def styled_button(self, parent, text, command, color=None):
         # macOS Aqua ignores custom backgrounds on native Tk buttons,
