@@ -176,6 +176,7 @@ class SitdownApp:
         tk.Label(server, textvariable=self.uptime, bg=c["panel"], fg=c["text"]).pack(anchor="w", pady=(4, 10))
         self.styled_button(server, "START THE SITDOWN", self.start, c["connected"]).pack(fill="x", pady=3)
         self.styled_button(server, "STOP SERVER", self.stop, c["primary"]).pack(fill="x", pady=3)
+        self.styled_button(server, "RESTART SERVER", self.restart, c["background"]).pack(fill="x", pady=3)
         tk.Checkbutton(server, text="Demo mode (no radio)", variable=self.demo,
                        bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w", pady=(8, 0))
         tk.Checkbutton(server, text="Restart on crash", variable=self.auto_restart,
@@ -207,6 +208,8 @@ class SitdownApp:
         log_header.pack(fill="x", padx=20, pady=(10, 0))
         label(log_header, "THE BACKROOM  •  SERVER ACTIVITY", 12, c["highlight"]).pack(side="left")
         button(log_header, "Save Log", self.export_log, c["panel"]).pack(side="right", padx=(8, 0))
+        button(log_header, "Copy Diagnostics", self.copy_diagnostics, c["panel"]).pack(
+            side="right", padx=(8, 0))
         button(log_header, "Clear Log", self.clear_log, c["panel"]).pack(side="right")
         button(log_header, "Nodes", self.show_nodes, c["panel"]).pack(side="right", padx=(0, 8))
         self.log_query = tk.StringVar()
@@ -495,6 +498,30 @@ class SitdownApp:
             self.start()
         if self.root.winfo_exists():
             self.root.after(500, self.poll)
+
+    def restart(self):
+        """Restart on demand without scheduling crash recovery."""
+        self.stop()
+        self.log("Manual server restart requested.")
+        self.start()
+
+    def copy_diagnostics(self):
+        """Copy useful local state; do not assert radio connectivity."""
+        monitor = self.supervisor
+        details = [
+            "The Sitdown BBS — local diagnostics",
+            f"Process status: {self.status.get()}",
+            f"Mode: {'Demo (no radio)' if self.demo.get() else self.connection.get().upper()}",
+            f"Endpoint: {self.address.get().strip() or '(default)'}",
+            f"Server process running: {bool(monitor and monitor.running)}",
+            f"Observed nodes: {len(monitor.nodes) if monitor else 0}",
+            f"Uptime: {monitor.uptime_seconds() if monitor else 0}s",
+            "Radio connection verified: Not determined by desktop process monitor",
+        ]
+        self.root.clipboard_clear()
+        self.root.clipboard_append("\\n".join(details))
+        self.root.update()
+        self.log("Local diagnostics copied to clipboard.")
 
     def stop(self):
         self.restart_at = None
