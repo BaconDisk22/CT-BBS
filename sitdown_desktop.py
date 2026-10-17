@@ -96,18 +96,14 @@ class SitdownApp:
             return tk.Label(parent, text=text, font=("Helvetica", size, "bold"),
                             fg=color or c["text"], bg=c["background"])
         button = self.styled_button
-        header = tk.Frame(self.root, bg=c["panel"], padx=22, pady=16)
-        header.pack(fill="x", padx=18, pady=(14, 10))
-        skyline = tk.Canvas(header, width=400, height=64, bg=c["panel"],
-                            highlightthickness=0)
-        skyline.pack(side="right", fill="both", expand=True, padx=(24, 0))
-        skyline.bind("<Configure>", lambda event: self.draw_skyline(skyline, event.width, event.height))
-        heading = tk.Frame(header, bg=c["panel"])
-        heading.pack(side="left")
-        tk.Label(heading, text="THE SITDOWN BBS", font=("Helvetica", 26, "bold"),
-                 fg=c["text"], bg=c["panel"]).pack(anchor="w")
-        tk.Label(heading, text="NORTH JERSEY  •  COMMUNICATIONS DIVISION",
-                 font=("Helvetica", 11, "bold"), fg=c["text"], bg=c["panel"]).pack(anchor="w")
+        # A single full-width banner keeps the skyline and title together on Intel Macs.
+        header = tk.Frame(self.root, bg="#071017")
+        header.pack(fill="x", padx=18, pady=(14, 8))
+        skyline = tk.Canvas(header, height=172, bg="#071017",
+                            highlightthickness=0, bd=0)
+        skyline.pack(fill="x", expand=True)
+        skyline.bind("<Configure>", lambda event: self.draw_skyline(
+            skyline, event.width, event.height))
         navigation = tk.Frame(self.root, bg=c["panel"], pady=7)
         navigation.pack(fill="x", padx=18, pady=(0, 7))
         self.navigation = navigation
@@ -262,6 +258,22 @@ class SitdownApp:
                 x, y = x1 + (x2 - x1) * t, y1 + (y2 - y1) * t
                 line((x, y, x, .88), "#64747B")
         line((0, .88, 1, .88), THEME["highlight"], 3)
+        # Layer the identity over the skyline rather than shrinking it into a side panel.
+        title_font = ("Helvetica", max(22, min(47, int(width / 24))), "bold")
+        canvas.create_rectangle(0, height * .1, width, height * .88,
+                                fill="#071017", stipple="gray50", outline="")
+        canvas.create_text(width * .035, height * .35, text="THE",
+                           fill="#F5F5F0", anchor="w",
+                           font=("Helvetica", max(12, int(width / 58)), "bold"))
+        canvas.create_text(width * .035, height * .59, text="SITDOWN",
+                           fill="#008C45", anchor="w", font=title_font)
+        canvas.create_text(width * .62, height * .59, text="BBS",
+                           fill="#C62828", anchor="w", font=title_font)
+        canvas.create_text(width * .038, height * .79,
+                           text="NORTH JERSEY  •  COMMUNICATIONS DIVISION",
+                           fill="#F5F5F0", anchor="w",
+                           font=("Helvetica", max(9, min(13, int(width / 82))), "bold"))
+
 
     def show_info(self, title, message):
         """Non-blocking themed information window; server polling stays active."""
