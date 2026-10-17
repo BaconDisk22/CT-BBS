@@ -202,7 +202,8 @@ class SitdownApp:
         for title, action in (("THE PLAYBOOK", self.commands),
                               ("THE BOOKS", self.backup), ("WHO'S WHO", self.show_nodes)):
             self.styled_button(tools, title, action, c["panel"]).pack(side="left", padx=(0, 8))
-        log_header = tk.Frame(self.root, bg=c["background"])
+        log_header = tk.Frame(self.root, bg=c["panel"], padx=12, pady=9,
+                              highlightbackground="#24404A", highlightthickness=1)
         log_header.pack(fill="x", padx=20, pady=(10, 0))
         label(log_header, "▤  SERVER LOG  •  THE BACKROOM", 12, c["highlight"]).pack(side="left")
         button(log_header, "Save Log", self.export_log, c["panel"]).pack(side="right", padx=(8, 0))
@@ -211,17 +212,19 @@ class SitdownApp:
         button(log_header, "Clear Log", self.clear_log, c["panel"]).pack(side="right")
         button(log_header, "Nodes", self.show_nodes, c["panel"]).pack(side="right", padx=(0, 8))
         self.log_query = tk.StringVar()
-        search_row = tk.Frame(self.root, bg=c["background"])
+        search_row = tk.Frame(self.root, bg=c["panel"], padx=12, pady=7)
         search_row.pack(fill="x", padx=20, pady=(8, 0))
-        tk.Label(search_row, text="Find in log:", bg=c["background"], fg=c["text"]).pack(side="left")
+        tk.Label(search_row, text="SEARCH LOG", bg=c["panel"], fg=c["highlight"],
+                 font=("Helvetica", 10, "bold")).pack(side="left")
         tk.Entry(search_row, textvariable=self.log_query, bg=c["panel"], fg=c["text"],
                  insertbackground=c["text"], relief="flat").pack(side="left", fill="x", expand=True, padx=8)
         button(search_row, "Find Next", self.find_log, c["panel"]).pack(side="right")
 
 
-        self.output = tk.Text(self.root, bg="#151B20", fg=c["text"], insertbackground=c["text"],
+        self.output = tk.Text(self.root, bg="#0B141A", fg=c["text"], insertbackground=c["text"],
                               wrap="word", relief="flat", state="disabled", height=17,
-                              font=("Menlo", 12), padx=12, pady=10)
+                              font=("Menlo", 11), padx=16, pady=12,
+                              highlightbackground="#24404A", highlightthickness=1)
         self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
         self.output.tag_configure("event_error", foreground="#FF8B85")
         self.output.tag_configure("event_ready", foreground="#82D9A0")
