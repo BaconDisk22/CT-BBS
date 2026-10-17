@@ -132,13 +132,13 @@ class SitdownApp:
 
         def card(column, title):
             frame = tk.Frame(cards, bg=c["panel"], padx=14, pady=12,
-                             highlightbackground="#4A4A4A", highlightthickness=1)
-            frame.grid(row=0, column=column, sticky="nsew", padx=5)
+                             highlightbackground="#24404A", highlightthickness=1)
+            frame.grid(row=0, column=column, sticky="nsew", padx=5, pady=4)
             tk.Label(frame, text=title, bg=c["panel"], fg=c["highlight"],
-                     font=("Helvetica", 13, "bold")).pack(anchor="w", pady=(0, 10))
+                     font=("Helvetica", 14, "bold")).pack(anchor="w", pady=(0, 12))
             return frame
 
-        radio = card(0, "01  •  RADIO CONNECTION")
+        radio = card(0, "◉  CONNECTION STATUS")
         tk.Radiobutton(radio, text="USB / Serial", variable=self.connection, value="serial",
                        bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w")
         tk.Radiobutton(radio, text="TCP / Network", variable=self.connection, value="tcp",
@@ -158,7 +158,7 @@ class SitdownApp:
                  bg=c["panel"], fg=c["highlight"], wraplength=275,
                  justify="left").pack(anchor="w", pady=(10, 0))
 
-        server = card(1, "02  •  BBS SERVER")
+        server = card(1, "▣  BBS SERVER")
         self.status_row = tk.Frame(server, bg=c["panel"])
         self.status_row.pack(fill="x", pady=(0, 8))
         self.status_dot = tk.Label(self.status_row, text="●", bg=c["panel"],
@@ -178,7 +178,7 @@ class SitdownApp:
         tk.Checkbutton(server, text="Restart on crash", variable=self.auto_restart,
                        bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w")
 
-        personality = card(2, "03  •  JERSEY PERSONALITY")
+        personality = card(2, "◈  JERSEY PERSONALITY")
         tk.Label(personality, text="Desktop greeting style", bg=c["panel"],
                  fg=c["text"]).pack(anchor="w")
         for title, mode in (("Clean Jersey", "clean"), ("Jersey Attitude", "attitude"),
@@ -202,7 +202,7 @@ class SitdownApp:
             self.styled_button(tools, title, action, c["panel"]).pack(side="left", padx=(0, 8))
         log_header = tk.Frame(self.root, bg=c["background"])
         log_header.pack(fill="x", padx=20, pady=(10, 0))
-        label(log_header, "THE BACKROOM  •  SERVER ACTIVITY", 12, c["highlight"]).pack(side="left")
+        label(log_header, "▤  SERVER LOG  •  THE BACKROOM", 12, c["highlight"]).pack(side="left")
         button(log_header, "Save Log", self.export_log, c["panel"]).pack(side="right", padx=(8, 0))
         button(log_header, "Copy Diagnostics", self.copy_diagnostics, c["panel"]).pack(
             side="right", padx=(8, 0))
