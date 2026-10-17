@@ -98,12 +98,20 @@ class SitdownApp:
         button = self.styled_button
         header = tk.Frame(self.root, bg=c["panel"], padx=22, pady=16)
         header.pack(fill="x", padx=18, pady=(14, 10))
-        tk.Label(header, text="THE SITDOWN BBS", font=("Helvetica", 26, "bold"),
+        skyline = tk.Canvas(header, width=400, height=64, bg=c["panel"],
+                            highlightthickness=0)
+        skyline.pack(side="right", fill="both", expand=True, padx=(24, 0))
+        skyline.bind("<Configure>", lambda event: self.draw_skyline(skyline, event.width, event.height))
+        heading = tk.Frame(header, bg=c["panel"])
+        heading.pack(side="left")
+        tk.Label(heading, text="THE SITDOWN BBS", font=("Helvetica", 26, "bold"),
                  fg=c["text"], bg=c["panel"]).pack(anchor="w")
-        tk.Label(header, text="NORTH JERSEY  •  COMMUNICATIONS DIVISION",
+        tk.Label(heading, text="NORTH JERSEY  •  COMMUNICATIONS DIVISION",
                  font=("Helvetica", 11, "bold"), fg=c["text"], bg=c["panel"]).pack(anchor="w")
         navigation = tk.Frame(self.root, bg=c["panel"], pady=7)
         navigation.pack(fill="x", padx=18, pady=(0, 7))
+        self.navigation = navigation
+        self.nav_buttons = []
         for title, action in [
             ("HOME", self.show_home),
             ("BBS", self.commands),
@@ -114,8 +122,10 @@ class SitdownApp:
             ("SETTINGS", self.settings),
             ("ABOUT", self.show_about),
         ]:
-            self.styled_button(navigation, title, action, c["primary"] if title == "HOME" else c["background"]).pack(
-                side="left", padx=3)
+            control = self.styled_button(
+                navigation, title, action, c["primary"] if title == "HOME" else c["background"])
+            self.nav_buttons.append(control)
+        navigation.bind("<Configure>", self.layout_navigation)
         tk.Frame(self.root, bg=c["connected"], height=4).pack(fill="x", padx=18)
         tk.Frame(self.root, bg=c["primary"], height=4).pack(fill="x", padx=18, pady=(3, 0))
         label(self.root, "Ayyy, pull up a chair. We gotta talk.", 12, c["highlight"]).pack(pady=(2, 10))
@@ -217,11 +227,79 @@ class SitdownApp:
         self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
         self.log("Pick a radio, or check Demo mode.")
 
+    def layout_navigation(self, event):
+        """Wrap measured controls so every action survives font/window resizing."""
+        cell_width = max(control.winfo_reqwidth() for control in self.nav_buttons) + 6
+        columns = max(1, min(len(self.nav_buttons), event.width // cell_width))
+        for index, control in enumerate(self.nav_buttons):
+            row, column = divmod(index, columns)
+            control.grid(row=row, column=column, sticky="ew", padx=3, pady=2)
+
+    @staticmethod
+    def draw_skyline(canvas, width, height):
+        """Original vector skyline and suspension bridge, inspired by the app icon."""
+        canvas.delete("all")
+        def line(points, color, thickness=1):
+            canvas.create_line(*[value * (width if i % 2 == 0 else height)
+                                 for i, value in enumerate(points)],
+                               fill=color, width=thickness)
+        for index, top in enumerate((.48, .3, .55, .2, .4, .32, .5, .16, .38, .25, .52)):
+            left = index / 11
+            right = left + .065
+            canvas.create_rectangle(left * width, top * height, right * width,
+                                    .88 * height, fill="#10181D", outline="")
+            for level in range(3):
+                y = top + .1 + level * .12
+                if y < .84:
+                    line((left + .02, y, right - .02, y), "#A47D3D", 2)
+        for tower in (.22, .78):
+            line((tower, .12, tower, .9), "#C8C8BD", 3)
+        cables = ((.02, .62), (.22, .18), (.5, .58), (.78, .18), (.98, .62))
+        for (x1, y1), (x2, y2) in zip(cables, cables[1:]):
+            line((x1, y1, x2, y2), "#C8C8BD", 2)
+            for step in range(1, 6):
+                t = step / 6
+                x, y = x1 + (x2 - x1) * t, y1 + (y2 - y1) * t
+                line((x, y, x, .88), "#64747B")
+        line((0, .88, 1, .88), THEME["highlight"], 3)
+
+    def show_info(self, title, message):
+        """Non-blocking themed information window; server polling stays active."""
+        previous_focus = self.root.focus_get()
+        win = tk.Toplevel(self.root)
+        win.title(title)
+        win.transient(self.root)
+        win.configure(bg=self.colors["background"])
+        win.resizable(False, False)
+        tk.Frame(win, bg=self.colors["connected"], height=4).pack(fill="x")
+        tk.Label(win, text=title, bg=self.colors["background"],
+                 fg=self.colors["highlight"], font=("Helvetica", 16, "bold"),
+                 wraplength=440, justify="left").pack(anchor="w", padx=22, pady=(18, 12))
+        tk.Label(win, text=message, bg=self.colors["background"],
+                 fg=self.colors["text"], font=("Helvetica", 12),
+                 wraplength=440, justify="left").pack(anchor="w", padx=22, pady=(0, 18))
+        def dismiss(_event=None):
+            win.destroy()
+            if previous_focus is not None and previous_focus.winfo_exists():
+                previous_focus.focus_set()
+            return "break"
+        close = self.styled_button(win, "OK", dismiss, self.colors["primary"])
+        close.pack(fill="x", padx=22, pady=(0, 18))
+        win.bind("<Escape>", dismiss)
+        win.bind("<Return>", dismiss)
+        win.protocol("WM_DELETE_WINDOW", dismiss)
+        win.update_idletasks()
+        x = max(0, self.root.winfo_rootx() + (self.root.winfo_width() - win.winfo_reqwidth()) // 2)
+        y = max(0, self.root.winfo_rooty() + (self.root.winfo_height() - win.winfo_reqheight()) // 2)
+        win.geometry(f"+{x}+{y}")
+        close.focus_set()
+        return win
+
     def refresh_connection_summary(self, *_args):
         """Display configured endpoint without claiming it is connected."""
         kind = "TCP / Network" if self.connection.get() == "tcp" else "USB / Serial"
         endpoint = self.address.get().strip() or "Not specified (auto/default)"
-        self.connection_summary.set(f"Configured: {kind}\\nEndpoint: {endpoint}")
+        self.connection_summary.set(f"Configured: {kind}\nEndpoint: {endpoint}")
 
     def refresh_status_indicator(self, *_args):
         """Color denotes BBS process state, not a verified radio link."""
@@ -240,23 +318,23 @@ class SitdownApp:
 
     def show_command_info(self, shortcut):
         """Show the actual radio command; do not imply desktop mail is implemented."""
-        messagebox.showinfo("The Sitdown BBS — Radio Commands",
+        self.show_info("The Sitdown BBS — Radio Commands",
                             f"Send {shortcut} as a direct message to your BBS node.\n"
                             "This desktop build does not provide a direct message composer.")
 
     def show_radio(self):
         """Bring attention to real radio connection settings on the dashboard."""
-        messagebox.showinfo("Radio Connection",
+        self.show_info("Radio Connection",
                             "Choose USB / Serial or Network radio on the dashboard, "
                             "then enter the device path or radio IP address. "
                             "Start the Sitdown to launch the configured BBS. "
                             "A running server process does not prove a radio link.")
 
     def show_about(self):
-        messagebox.showinfo("About The Sitdown BBS",
+        self.show_info("About The Sitdown BBS",
                             "THE SITDOWN BBS — North Jersey Communications Division\n"
                             "A Jersey-themed Meshtastic BBS based on TC²-BBS.\n"
-                            "Built for the mesh. Raised in Jersey.\\n\n"
+                            "Built for the mesh. Raised in Jersey.\n\n"
                             "Connection details shown here come from the running app, "
                             "not from promotional demo artwork.")
 
@@ -307,7 +385,7 @@ class SitdownApp:
             self.output.mark_set("insert", match)
             self.output.see(match)
         else:
-            messagebox.showinfo("The Backroom", "No matching log entry found.")
+            self.show_info("The Backroom", "No matching log entry found.")
 
     def show_nodes(self):
         """Display observed node IDs only; no network lookup or radio traffic."""
@@ -474,7 +552,7 @@ class SitdownApp:
                 personality = Personality(self.desktop_mouth.get(), self.public_mouth.get(),
                                           self.public_profanity.get())
                 preview.set("Desktop: " + personality.message("welcome") +
-                            "\\nPublic (not transmitted): " + personality.message("welcome", public=True))
+                            "\nPublic (not transmitted): " + personality.message("welcome", public=True))
             except ValueError:
                 preview.set("Invalid personality settings")
         for variable in (self.desktop_mouth, self.public_mouth, self.public_profanity):
