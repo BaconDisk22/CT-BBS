@@ -519,7 +519,7 @@ class SitdownApp:
             "Radio connection verified: Not determined by desktop process monitor",
         ]
         self.root.clipboard_clear()
-        self.root.clipboard_append("\\n".join(details))
+        self.root.clipboard_append("\n".join(details))
         self.root.update()
         self.log("Local diagnostics copied to clipboard.")
 
