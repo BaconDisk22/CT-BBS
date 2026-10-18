@@ -3,6 +3,10 @@
 
 ## Jersey desktop and operator desks
 
+The dashboard uses the reference-style nighttime waterfront banner, distressed
+Jersey lettering, matching Dock icon, dark teal panels, red controls, and green
+console text. The artwork is bundled locally for offline use.
+
 The dashboard now has working tab pages for BBS utilities, local mail and boards,
 radio status, full node lookup, settings, and About. Admin announcements and an
 optional startup broadcast use the existing radio connection. Weather works with
@@ -13,7 +17,7 @@ Read the [configuration and command guide](docs/JERSEY_DESK.md) and
 opt-in services, then desktop integration. Mac builds are test artifacts until
 validated with a physical radio on an Intel Mac.
 
-![Jersey app icon](docs/images/app-icon.png)
+<img src="docs/images/app-icon.png" alt="Reference-style Jersey app icon" width="180">
 
 
 # 🤌 THE SITDOWN BBS
