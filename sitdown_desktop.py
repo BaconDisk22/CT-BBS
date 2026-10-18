@@ -498,7 +498,8 @@ class SitdownApp:
             self.supervisor = ServerSupervisor(cmd, DATA if getattr(sys, "frozen", False) else ROOT)
             self.supervisor.start()
             self.status.set("Starting...")
-            self.radio_activity.set("Radio activity: Awaiting messages")
+            if hasattr(self, "radio_activity"):
+                self.radio_activity.set("Radio activity: Awaiting messages")
             self.log("Starting The Sitdown BBS...")
         except OSError as exc:
             self.supervisor = None
@@ -571,7 +572,8 @@ class SitdownApp:
             self.supervisor.stop()
             self.supervisor = None
         self.status.set("Stopped")
-        self.radio_activity.set("Radio activity: Process stopped")
+        if hasattr(self, "radio_activity"):
+            self.radio_activity.set("Radio activity: Process stopped")
         self.uptime.set("Uptime: 0s")
         self.log("Fuggedaboutit. Server stopped.")
 
