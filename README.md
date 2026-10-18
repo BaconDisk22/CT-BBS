@@ -17,7 +17,7 @@
 
 Around here, we don't just send messages. **We have sitdowns.**
 
-**The Sitdown BBS** is a New Jersey–themed fork of the TC²-BBS Meshtastic bulletin board server. Send direct messages over Meshtastic to access community bulletins, mail, channel information, and utilities—no internet required for the radio link.
+**The Sitdown BBS** is a New Jersey–themed Meshtastic bulletin board server based on the open-source TC²-BBS project. Send direct messages over Meshtastic to access community bulletins, mail, channel information, and utilities—no internet required for the radio link.
 
 Think old-school bulletin boards with a North Jersey attitude: diner coffee, Sunday gravy, and the eternal **pork roll vs. Taylor ham** debate. Whatever exit you're from, there's a seat at the table.
 
@@ -142,7 +142,7 @@ GitHub Actions also checks syntax and the command alias tests. Hardware validati
 
 ## 🙏 Respect to the original crew
 
-**The Sitdown BBS** is based on **TC²-BBS Meshtastic** by **TheCommsChannel (TC²)**. The original project provided the BBS architecture and Meshtastic integration; this fork adds its own Jersey theme, shortcuts, and desktop preview.
+**Upstream credit:** The Sitdown BBS is based on **TC²-BBS Meshtastic** by **TheCommsChannel (TC²)**. The original project provided the BBS architecture and Meshtastic integration; this fork adds its own Jersey theme, shortcuts, and desktop preview.
 
 - [Original TC²-BBS-mesh project](https://github.com/TheCommsChannel/TC2-BBS-mesh)
 - [Meshtastic](https://meshtastic.org/)
