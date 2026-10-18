@@ -366,8 +366,8 @@ class SitdownApp:
     def show_about(self):
         self.show_info("About The Sitdown BBS",
                             "THE SITDOWN BBS — North Jersey Communications Division\n"
-                            "A Jersey-themed Meshtastic BBS based on TC²-BBS.\n"
-                            "Built for the mesh. Raised in Jersey.\n\n"
+                            "Jersey-themed Meshtastic bulletin board.\n"
+                            "Built for the mesh. Raised in Jersey.\n\n"\n                            "Original project: TC²-BBS by TheCommsChannel.\n"\n                            "https://github.com/TheCommsChannel/TC2-BBS-mesh\n\n"
                             "Connection details shown here come from the running app, "
                             "not from promotional demo artwork.")
 
