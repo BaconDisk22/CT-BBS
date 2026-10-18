@@ -1,5 +1,6 @@
 """Private parent/child pipe protocol; no listening socket or internet endpoint."""
 import json
+import os
 import queue
 import sys
 import threading
@@ -9,7 +10,8 @@ PREFIX = 'SITDOWN_EVENT '
 
 
 def emit(payload):
-    print(PREFIX + json.dumps(payload), flush=True)
+    token = os.environ.get('SITDOWN_CONTROL_TOKEN', '')
+    print(PREFIX + token + ' ' + json.dumps(payload), flush=True)
 
 
 def start_reader(stream=None):

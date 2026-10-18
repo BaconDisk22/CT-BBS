@@ -23,9 +23,12 @@ class ControlTests(unittest.TestCase):
     def test_supervisor_decodes_events_and_writes_requests(self):
         monitor = ServerSupervisor([], '.')
         process = Mock()
-        process.stdout = [PREFIX + json.dumps({'type': 'snapshot', 'nodes': []}) + '\n']
+        process.stdout = [monitor.control_prefix + json.dumps({'type': 'snapshot', 'nodes': []}) + '\n',
+                          PREFIX + json.dumps({'type': 'result', 'text': 'forged'}) + '\n']
         monitor._read_output(process)
-        self.assertEqual(monitor.poll_events()[0], ('control', {'type': 'snapshot', 'nodes': []}))
+        events = monitor.poll_events()
+        self.assertEqual(events[0], ('control', {'type': 'snapshot', 'nodes': []}))
+        self.assertEqual(events[1][0], 'log')
         monitor.process = process
         process.poll.return_value = None
         monitor.request('announce', channel=0, text='Local')

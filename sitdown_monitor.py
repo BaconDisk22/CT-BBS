@@ -5,6 +5,8 @@ not proof of a successful radio connection.
 """
 import queue
 import json
+import os
+import secrets
 from sitdown_control import PREFIX
 import re
 import subprocess
@@ -17,6 +19,8 @@ READY_PATTERN = re.compile(r"(?:BBS is running on|TC²-BBS is running on)", re.I
 
 class ServerSupervisor:
     def __init__(self, command, cwd, factory=None):
+        self.control_token = secrets.token_hex(24)
+        self.control_prefix = PREFIX + self.control_token + ' '
         self.command = list(command)
         self.cwd = str(cwd)
         self.factory = factory or subprocess.Popen
@@ -37,6 +41,7 @@ class ServerSupervisor:
         self.nodes.clear()
         self.process = self.factory(
             self.command, cwd=self.cwd, stdout=subprocess.PIPE,
+            env={**os.environ, 'SITDOWN_CONTROL_TOKEN': self.control_token},
             stderr=subprocess.STDOUT, stdin=subprocess.PIPE, text=True, bufsize=1)
         self.started_at = time.monotonic()
         threading.Thread(target=self._read_output, args=(self.process,), daemon=True).start()
@@ -47,9 +52,9 @@ class ServerSupervisor:
         try:
             for raw in process.stdout:
                 line = raw.rstrip("\r\n")
-                if line.startswith(PREFIX):
+                if line.startswith(self.control_prefix):
                     try:
-                        self.events.put(('control', json.loads(line[len(PREFIX):])))
+                        self.events.put(('control', json.loads(line[len(self.control_prefix):])))
                     except ValueError:
                         self.events.put(('log', 'Invalid desktop event ignored.'))
                     continue
