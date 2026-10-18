@@ -80,6 +80,14 @@ class UtilityTests(unittest.TestCase):
             mp.on_receive(packet, self.radio)
             send.assert_not_called()
 
+    def test_radio_reply_chunks_preserve_unicode_within_byte_budget(self):
+        from utils import message_chunks
+        text = 'Jersey 🗽 ' * 80
+        chunks = list(message_chunks(text))
+        self.assertEqual(''.join(chunks), text)
+        self.assertTrue(all(0 < len(chunk.encode('utf-8')) <= 200 for chunk in chunks))
+        self.assertEqual(list(message_chunks('')), [])
+
     def test_tcp_interface_uses_hostname(self):
         from config_init import get_interface
         with patch('config_init.meshtastic.tcp_interface.TCPInterface') as tcp:

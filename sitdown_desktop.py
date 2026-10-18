@@ -66,6 +66,7 @@ class SitdownApp:
         style.configure('TNotebook', background=THEME['background'], borderwidth=0)
         style.configure('TNotebook.Tab', background=THEME['panel'], foreground=THEME['text'], padding=(15, 10))
         style.map('TNotebook.Tab', background=[('selected', THEME['primary'])], foreground=[('selected', 'white')])
+        style.configure('Desk.TEntry', fieldbackground='#0B141A', foreground='white', insertcolor='white', padding=8)
         style.configure('TCombobox', fieldbackground=THEME['background'], foreground=THEME['text'])
         style.map('TCombobox', fieldbackground=[('readonly', THEME['background'])], foreground=[('readonly', THEME['text'])])
         self.root.option_add('*Entry.highlightThickness', 1)
@@ -444,7 +445,7 @@ class SitdownApp:
                 else:
                     var = tk.StringVar(value=config.get(section, key, fallback=default))
                     tk.Label(frame, text=label, bg=THEME['panel'], fg=THEME['text']).pack(anchor='w', pady=(8, 2))
-                    tk.Entry(frame, textvariable=var, show='*' if key == 'password' else '', bg=THEME['background'], fg=THEME['text'], insertbackground='white').pack(fill='x')
+                    ttk.Entry(frame, textvariable=var, show='*' if key == 'password' else '', style='Desk.TEntry').pack(fill='x', pady=(3, 8))
                 fields[(section, key)] = var
         def save():
             for (section, key), var in fields.items():
