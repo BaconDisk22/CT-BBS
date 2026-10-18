@@ -58,6 +58,10 @@ d.text((512,852),"BBS",font=font,anchor="mm",fill="#F5F5F0",stroke_width=5,strok
 d.text((512,185),"THE SITDOWN",font=small,anchor="mm",fill="#F5F5F0",stroke_width=2,stroke_fill="#05090C")
 out=Path("build")
 out.mkdir(exist_ok=True)
+# Clip all artwork to the rounded tile silhouette.
+alpha = Image.new('L', (S, S), 0)
+ImageDraw.Draw(alpha).rounded_rectangle((28,28,996,996), radius=210, fill=255)
+img.putalpha(alpha)
 img.save(out/"sitdown-icon.png")
 
 preview = Path("docs/images/app-icon.png")

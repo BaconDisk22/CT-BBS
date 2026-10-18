@@ -61,6 +61,16 @@ class SitdownApp:
         self.root.geometry("1280x900")
         self.root.minsize(960, 650)
         self.root.configure(bg=THEME["background"])
+        style = ttk.Style(self.root)
+        style.theme_use('clam')
+        style.configure('TNotebook', background=THEME['background'], borderwidth=0)
+        style.configure('TNotebook.Tab', background=THEME['panel'], foreground=THEME['text'], padding=(15, 10))
+        style.map('TNotebook.Tab', background=[('selected', THEME['primary'])], foreground=[('selected', 'white')])
+        style.configure('TCombobox', fieldbackground=THEME['background'], foreground=THEME['text'])
+        style.map('TCombobox', fieldbackground=[('readonly', THEME['background'])], foreground=[('readonly', THEME['text'])])
+        self.root.option_add('*Entry.highlightThickness', 1)
+        self.root.option_add('*Entry.highlightBackground', '#527079')
+        self.root.option_add('*Entry.relief', 'flat')
         self.load()
         self.build()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
@@ -345,6 +355,8 @@ class SitdownApp:
                  fg=THEME['text'], bg=THEME['panel']).pack(anchor='w')
         channel = tk.StringVar()
         options = [f"{ch['index']}: {ch['name']}" for ch in self.snapshot['channels']]
+        if options:
+            channel.set(options[0])
         ttk.Combobox(announcement, textvariable=channel, values=options, state='readonly').pack(fill='x', pady=10)
         text = tk.Text(announcement, height=5, bg=THEME['background'], fg=THEME['text'], insertbackground='white')
         text.pack(fill='x', pady=10)
@@ -414,6 +426,7 @@ class SitdownApp:
         tabs = ttk.Notebook(page)
         tabs.pack(fill='both', expand=True)
         fields = {}
+        self.setting_fields = fields
         sections = {
             'startup': [('enabled', 'Broadcast on server start', 'bool'), ('channel', 'Channel index', '0'), ('message', 'Custom welcome (blank = personality)', '')],
             'announcements': [('admin_nodes', 'Remote administrator node IDs (comma separated)', '')],
@@ -502,19 +515,18 @@ class SitdownApp:
         line((0, .88, 1, .88), THEME["highlight"], 3)
         # Layer the identity over the skyline rather than shrinking it into a side panel.
         title_font = ("Helvetica", max(22, min(47, int(width / 24))), "bold")
-        canvas.create_rectangle(0, height * .1, width, height * .88,
-                                fill="#071017", stipple="gray50", outline="")
-        canvas.create_text(width * .035, height * .35, text="THE",
-                           fill="#F5F5F0", anchor="w",
-                           font=("Helvetica", max(12, int(width / 58)), "bold"))
-        canvas.create_text(width * .035, height * .59, text="SITDOWN",
-                           fill="#008C45", anchor="w", font=title_font)
-        canvas.create_text(width * .62, height * .59, text="BBS",
-                           fill="#C62828", anchor="w", font=title_font)
-        canvas.create_text(width * .038, height * .79,
-                           text="NORTH JERSEY  •  COMMUNICATIONS DIVISION",
-                           fill="#F5F5F0", anchor="w",
-                           font=("Helvetica", max(9, min(13, int(width / 82))), "bold"))
+        # Aqua Tk does not render stippled fills transparently; keep skyline visible.
+        canvas.create_rectangle(0, 0, width * .52, height * .86, fill='#071017', outline='')
+        canvas.create_text(width * .035, height * .2, text='THE', fill='#F5F5F0', anchor='w',
+                           font=('Helvetica', max(12, int(width / 70)), 'bold'))
+        x = width * .035
+        for word, color in (('SIT', '#008C45'), ('DOWN', '#F5F5F0'), (' BBS', '#E13232')):
+            item = canvas.create_text(x, height * .5, text=word, fill=color, anchor='w', font=title_font)
+            x = canvas.bbox(item)[2]
+        canvas.create_text(width * .038, height * .78,
+                           text='NORTH JERSEY  •  COMMUNICATIONS DIVISION',
+                           fill='#F5F5F0', anchor='w',
+                           font=('Helvetica', max(9, min(13, int(width / 82))), 'bold'))
 
 
     def show_info(self, title, message):
@@ -598,7 +610,7 @@ class SitdownApp:
         # producing white-on-white labels. Use a keyboard-accessible Label.
         background = color or self.colors["primary"]
         control = tk.Label(parent, text=text, bg=background, fg="#FFFFFF",
-                           padx=8 if compact else 13, pady=7 if compact else 10,
+                           padx=8 if compact else 13, pady=7,
                            cursor="hand2",
                            font=("Helvetica", 10 if compact else 12, "bold"), relief="flat",
                            highlightthickness=2, highlightbackground=self.colors["background"],
