@@ -21,9 +21,9 @@ from utils import (
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-main_menu_items = config['menu']['main_menu_items'].split(',')
-bbs_menu_items = config['menu']['bbs_menu_items'].split(',')
-utilities_menu_items = config['menu']['utilities_menu_items'].split(',')
+main_menu_items = config.get('menu', 'main_menu_items', fallback='Q,B,U,X').split(',')
+bbs_menu_items = config.get('menu', 'bbs_menu_items', fallback='M,B,C,J,X').split(',')
+utilities_menu_items = config.get('menu', 'utilities_menu_items', fallback='S,F,W,X').split(',')
 
 
 def build_menu(items, menu_name):
@@ -60,7 +60,7 @@ def handle_help_command(sender_id, interface, menu_name=None):
         if menu_name == 'bbs':
             response = build_menu(bbs_menu_items, "📰 The Social Club")
         elif menu_name == 'utilities':
-            response = build_menu(utilities_menu_items, "🛠️ The Backroom")
+            response = build_menu(utilities_menu_items, "🛠️ The Backroom") + "\n/node <ID or name>\n/announce <channel> <text> (admin)"
     else:
         update_user_state(sender_id, {'command': 'MAIN_MENU', 'step': 1})  # Reset to main menu state
         mail = get_mail(get_node_id_from_num(sender_id, interface))

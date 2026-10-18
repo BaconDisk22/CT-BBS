@@ -58,7 +58,8 @@ jobs:
         run: |
           test "$(uname -m)" = "x86_64"
           python -m compileall -q sitdown_desktop.py sitdown_monitor.py command_handlers.py
-          python -m unittest discover -s tests -p 'test_sitdown_*.py'
+          python -m unittest discover -s tests
+          python -m unittest test_sitdown_personality
           python -m unittest discover -s tests -p 'test_jersey_replies.py'
       - name: Generate original Jersey icon
         run: |

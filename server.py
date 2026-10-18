@@ -20,6 +20,7 @@ from db_operations import initialize_database
 from js8call_integration import JS8CallClient
 from message_processing import on_receive
 from pubsub import pub
+from sitdown_utilities import LocalUtilities
 
 # General logging
 logging.basicConfig(
@@ -62,6 +63,7 @@ def main():
     interface = get_interface(system_config)
     interface.bbs_nodes = system_config['bbs_nodes']
     interface.allowed_nodes = system_config['allowed_nodes']
+    interface.sitdown = LocalUtilities(interface, system_config['config'])
 
     logging.info(f"TC²-BBS is running on {system_config['interface_type']} interface...")
 
@@ -78,6 +80,8 @@ def main():
 
     if js8call_client.db_conn:
         js8call_client.connect()
+
+    interface.sitdown.startup()
 
     try:
         while True:
