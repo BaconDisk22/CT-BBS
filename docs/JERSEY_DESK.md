@@ -55,8 +55,9 @@ radio connection using a private parent/child pipe, with no HTTP listener.
 ## Reference and verification
 
 The reference's dark skyline, bridge, tricolor accents, red controls and Jersey
-identity guide the real Tk interface. The generated icon adds a New Jersey
-silhouette. Screenshots are captured from demo mode and labeled accordingly.
+identity guide the real Tk interface. Production artwork now supplies the cinematic waterfront banner and matching
+distressed tricolor Jersey icon. Assets are bundled locally, including offline
+source operation; the icon packager preserves the approved artwork. Screenshots are captured from demo mode and labeled accordingly.
 They are not evidence of a connected radio.
 
 CI runs unit tests, real Tk layout/navigation checks on Intel macOS, captures the

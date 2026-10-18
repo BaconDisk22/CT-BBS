@@ -59,7 +59,7 @@ class SitdownApp:
         self.colors = THEME
         self.root.title("THE SITDOWN BBS | North Jersey Communications Division")
         self.root.geometry("1160x940")
-        self.root.minsize(960, 650)
+        self.root.minsize(960, 760)
         self.root.configure(bg=THEME["background"])
         style = ttk.Style(self.root)
         style.theme_use('clam')
@@ -128,6 +128,8 @@ class SitdownApp:
         self.banner = tk.Canvas(header, height=220, bg=c['background'], highlightthickness=0)
         self.banner.pack(fill='x')
         self.banner.bind('<Configure>', self.render_banner)
+        self.root.bind('<Configure>', lambda event: self.banner.configure(
+            height=max(100, min(220, event.height - 700))) if event.widget is self.root else None, add='+')
         navigation = tk.Frame(self.root, bg=c["panel"], pady=7)
         navigation.pack(fill="x", padx=12, pady=(2, 6))
         self.navigation = navigation
@@ -492,6 +494,9 @@ class SitdownApp:
         """Wrap measured controls so every action survives font/window resizing."""
         cell_width = max(control.winfo_reqwidth() for control in self.nav_buttons) + 6
         columns = max(1, min(len(self.nav_buttons), event.width // cell_width))
+        for column in range(len(self.nav_buttons)):
+            self.navigation.grid_columnconfigure(column, weight=1 if column < columns else 0,
+                                                 uniform='nav' if column < columns else '')
         for index, control in enumerate(self.nav_buttons):
             row, column = divmod(index, columns)
             control.grid(row=row, column=column, sticky="ew", padx=3, pady=2)
