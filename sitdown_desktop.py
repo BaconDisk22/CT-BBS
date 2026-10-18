@@ -48,7 +48,7 @@ class SitdownApp:
         self.colors = THEME
         self.root.title("THE SITDOWN BBS | North Jersey Communications Division")
         self.root.geometry("1280x900")
-        self.root.minsize(1120, 740)
+        self.root.minsize(960, 650)
         self.root.configure(bg=THEME["background"])
         self.load()
         self.build()
@@ -98,8 +98,8 @@ class SitdownApp:
         button = self.styled_button
         # A single full-width banner keeps the skyline and title together on Intel Macs.
         header = tk.Frame(self.root, bg="#071017")
-        header.pack(fill="x", padx=18, pady=(14, 8))
-        skyline = tk.Canvas(header, height=172, bg="#071017",
+        header.pack(fill="x", padx=18, pady=(8, 4))
+        skyline = tk.Canvas(header, height=112, bg="#071017",
                             highlightthickness=0, bd=0)
         skyline.pack(fill="x", expand=True)
         skyline.bind("<Configure>", lambda event: self.draw_skyline(
@@ -128,16 +128,16 @@ class SitdownApp:
         tk.Frame(self.root, bg=c["primary"], height=4).pack(fill="x", padx=18, pady=(3, 0))
         label(self.root, "Ayyy, pull up a chair. We gotta talk.", 12, c["highlight"]).pack(pady=(2, 10))
         cards = tk.Frame(self.root, bg=c["background"])
-        cards.pack(fill="x", padx=18, pady=(0, 12))
+        cards.pack(fill="x", padx=18, pady=(0, 4))
         for column in range(3):
             cards.grid_columnconfigure(column, weight=1, uniform="jersey")
 
         def card(column, title):
-            frame = tk.Frame(cards, bg=c["panel"], padx=14, pady=12,
+            frame = tk.Frame(cards, bg=c["panel"], padx=10, pady=7,
                              highlightbackground="#24404A", highlightthickness=1)
             frame.grid(row=0, column=column, sticky="nsew", padx=5, pady=4)
             tk.Label(frame, text=title, bg=c["panel"], fg=c["highlight"],
-                     font=("Helvetica", 14, "bold")).pack(anchor="w", pady=(0, 12))
+                     font=("Helvetica", 13, "bold")).pack(anchor="w", pady=(0, 5))
             return frame
 
         radio = card(0, "◉  CONNECTION STATUS")
@@ -221,15 +221,10 @@ class SitdownApp:
         button(search_row, "Find Next", self.find_log, c["panel"]).pack(side="right")
 
 
-        self.output = tk.Text(self.root, bg="#0B141A", fg=c["text"], insertbackground=c["text"],
-                              wrap="word", relief="flat", state="disabled", height=17,
-                              font=("Menlo", 11), padx=16, pady=12,
-                              highlightbackground="#24404A", highlightthickness=1)
-        self.output.pack(fill="both", expand=True, padx=20, pady=(12, 20))
         # Read-only footer: process status is not proof of a live radio link.
         footer = tk.Frame(self.root, bg=c["panel"], padx=14, pady=7,
                           highlightbackground="#24404A", highlightthickness=1)
-        footer.pack(fill="x", padx=20, pady=(0, 12))
+        footer.pack(side="bottom", fill="x", padx=20, pady=(0, 6))
         tk.Label(footer, text="THE SITDOWN BBS  •  NORTH JERSEY",
                  bg=c["panel"], fg=c["highlight"],
                  font=("Helvetica", 10, "bold")).pack(side="left")
@@ -237,6 +232,11 @@ class SitdownApp:
                  font=("Helvetica", 10)).pack(side="right", padx=(14, 0))
         tk.Label(footer, text="SERVER PROCESS:", bg=c["panel"], fg=c["highlight"],
                  font=("Helvetica", 10, "bold")).pack(side="right")
+        self.output = tk.Text(self.root, bg="#0B141A", fg=c["text"], insertbackground=c["text"],
+                              wrap="word", relief="flat", state="disabled", height=7,
+                              font=("Menlo", 11), padx=16, pady=12,
+                              highlightbackground="#24404A", highlightthickness=1)
+        self.output.pack(fill="both", expand=True, padx=20, pady=(5, 5))
         self.output.tag_configure("event_error", foreground="#FF8B85")
         self.output.tag_configure("event_ready", foreground="#82D9A0")
         self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
@@ -394,7 +394,8 @@ class SitdownApp:
                 ("error", "failed", "traceback")) else
                "event_ready" if any(word in message.lower() for word in
                 ("initialized", "ready", "running")) else None)
-        self.output.insert("end", message + "\n", (tag,) if tag else ())
+        display = message.replace("\\n", "\n    ") if "Sending message to user" in message else message
+        self.output.insert("end", display + "\n", (tag,) if tag else ())
         if int(self.output.index("end-1c").split(".")[0]) > 2000:
             self.output.delete("1.0", "300.0")
         self.output.see("end")
