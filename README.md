@@ -36,6 +36,8 @@ Think old-school bulletin boards with a North Jersey attitude: diner coffee, Sun
 | 🧪 **Demo Mode** | Explore desktop controls without connecting or transmitting over radio |
 | 📦 **The Books** | Create a ZIP backup of available local settings and database files |
 
+**Hardware verification (October 2026):** The Intel Mac desktop BBS launched and received a real Meshtastic message over TCP. The sending device confirmed receiving the BBS menu reply. The latest compact layout and radio activity indicator still require follow-up testing on the Mac. The activity indicator reflects incoming messages seen in server logs, not continuous link health.
+
 **Development note:** The desktop dashboard includes live server logs, process monitoring, USB port discovery, optional process restart, and a radio-free demo mode. Intel Mac build and release workflows are configured; check [Releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases) for a successfully published build. Real radio connection verification, restore, and automated screenshot publication still require further validation.
 
 ## 🕵️ The Backroom — dashboard tools
@@ -49,9 +51,10 @@ The desktop launcher includes a few handy tools for keeping tabs on the family b
 | **Clear Log** | Clear the visible log without stopping the BBS process |
 | **Nodes / Who's Who** | Open a list of node IDs observed during the current session |
 | **Refresh USB Ports** | List detected serial devices and fill in the port when exactly one is available |
-| **Restart on crash** | Optionally restart the server process after an unexpected exit |
+| **Restart on crash** | Optionally restart the server process after an unexpected exit with capped exponential backoff |
+| **Radio activity** | Reports incoming Meshtastic messages observed in BBS logs without claiming a permanent connection |
 
-**What's not included yet:** The node viewer shows observed IDs, not a live network directory. Search operates on the visible log only. The dashboard's personality controls are local preferences; they do not yet change radio replies. Radio connectivity and Intel Mac packaging still need validation on actual hardware.
+**What's not included yet:** The node viewer shows observed IDs, not a live network directory. Search operates on the visible log only. The dashboard's personality controls are local preferences; they do not yet change radio replies. Two-way radio messaging has been confirmed on an Intel Mac; the latest UI, disconnect recovery, and final release package still need follow-up testing.
 
 ### Jersey Mouth Control
 

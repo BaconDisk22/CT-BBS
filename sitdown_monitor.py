@@ -23,6 +23,7 @@ class ServerSupervisor:
         self.started_at = None
         self.nodes = {}
         self.ready = False
+        self.last_rx_at = None
         self.stopping = False
 
     def start(self):
@@ -30,6 +31,8 @@ class ServerSupervisor:
             return False
         self.stopping = False
         self.ready = False
+        self.last_rx_at = None
+        self.nodes.clear()
         self.process = self.factory(
             self.command, cwd=self.cwd, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT, text=True, bufsize=1)
@@ -47,6 +50,8 @@ class ServerSupervisor:
                     self.events.put(("state", "Server initialized (radio link unverified)"))
                 match = NODE_PATTERN.search(line)
                 if match:
+                    self.last_rx_at = time.time()
+                    self.events.put(("activity", "rx"))
                     name, node_id = match.groups()
                     self.nodes[node_id] = (name, time.time())
                     self.events.put(("node", node_id))
@@ -76,6 +81,7 @@ class ServerSupervisor:
         self.process = None
         self.started_at = None
         self.ready = False
+        self.last_rx_at = None
 
     def poll_events(self, limit=100):
         items = []
