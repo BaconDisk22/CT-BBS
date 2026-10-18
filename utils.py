@@ -42,7 +42,7 @@ def get_node_info(interface, short_name):
 
 def get_node_id_from_num(node_num, interface):
     for node_id, node in interface.nodes.items():
-        if node['num'] == node_num:
+        if node.get('num') == node_num:
             return node_id
     return None
 
@@ -50,7 +50,7 @@ def get_node_id_from_num(node_num, interface):
 def get_node_short_name(node_id, interface):
     node_info = interface.nodes.get(node_id)
     if node_info:
-        return node_info['user']['shortName']
+        return node_info.get('user', {}).get('shortName')
     return None
 
 

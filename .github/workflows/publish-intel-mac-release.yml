@@ -79,6 +79,13 @@ jobs:
             --hidden-import paho.mqtt.client --collect-all meshtastic --collect-all pubsub sitdown_desktop.py
           test -d "dist/The Sitdown BBS.app"
           lipo -archs "dist/The Sitdown BBS.app/Contents/MacOS/The Sitdown BBS" | grep -q x86_64
+      - name: Smoke test the packaged Intel app without radio
+        run: |
+          python - <<'PYTHON'
+          import subprocess
+          subprocess.run(['dist/The Sitdown BBS.app/Contents/MacOS/The Sitdown BBS',
+                          '--sitdown-smoke-test'], check=True, timeout=45)
+          PYTHON
       - name: Build release DMG and checksums
         env:
           VERSION: ${{ steps.version.outputs.value }}

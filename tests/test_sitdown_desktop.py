@@ -104,6 +104,28 @@ class DesktopWindowTests(unittest.TestCase):
             self.app.control_request('announce', channel=0, text='Demo')
             self.app.supervisor.request.assert_not_called()
 
+    def test_settings_save_preserves_existing_config_and_validates(self):
+        path = Path(self.directory.name) / 'config.ini'
+        path.write_text('[interface]\ntype = tcp\nhostname = 192.0.2.10\n[menu]\nmain_menu_items = B,X\n')
+        with patch.object(self.app, 'config_path', return_value=path), patch.object(self.app, 'show_info'):
+            self.app.select_page('SETTINGS')
+            self.root.update()
+            fields = self.app.setting_fields
+            fields[('startup', 'enabled')].set(True)
+            fields[('startup', 'message')].set('Hello Jersey')
+            button = next(w for w in self.app.active_page.winfo_children()
+                          if isinstance(w, tk.Label) and w.cget('text').startswith('SAVE'))
+            button.event_generate('<Button-1>')
+            config = self.app.read_config()
+            self.assertEqual(config.get('interface', 'hostname'), '192.0.2.10')
+            self.assertEqual(config.get('menu', 'main_menu_items'), 'B,X')
+            self.assertTrue(config.getboolean('startup', 'enabled'))
+            self.assertEqual(config.get('startup', 'message'), 'Hello Jersey')
+            original = path.read_text()
+            fields[('startup', 'channel')].set('99')
+            button.event_generate('<Button-1>')
+            self.assertEqual(path.read_text(), original)
+
     def test_info_is_themed_nonblocking_and_keyboard_dismissible(self):
         for key in ("<Escape>", "<Return>", "<space>"):
             win = self.app.show_info("Radio Connection", "First line\nSecond line")

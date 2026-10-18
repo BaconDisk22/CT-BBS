@@ -852,6 +852,24 @@ class SitdownApp:
 
 
 if __name__ == "__main__":
+    if '--sitdown-smoke-test' in sys.argv:
+        # Exercise the packaged imports and actual Tk pages without user config/radio.
+        import tempfile
+        import server
+        import paho.mqtt.client
+        with tempfile.TemporaryDirectory() as folder:
+            DATA = Path(folder)
+            CONFIG = DATA / 'launcher.json'
+            root = tk.Tk()
+            app = SitdownApp(root)
+            app.demo.set(True)
+            app.start()
+            for page in ('BBS', 'NODES', 'SETTINGS', 'HOME'):
+                app.select_page(page)
+                root.update()
+            assert app.status.get() == 'Demo running — no radio'
+            root.destroy()
+        sys.exit(0)
     if "--sitdown-server" in sys.argv:
         sys.argv.remove("--sitdown-server")
         import server  # Ensures PyInstaller includes the server and its dependencies.

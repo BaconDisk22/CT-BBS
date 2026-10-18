@@ -70,6 +70,13 @@ jobs:
             sitdown_desktop.py
           test -d "dist/The Sitdown BBS.app"
           test "$(lipo -archs 'dist/The Sitdown BBS.app/Contents/MacOS/The Sitdown BBS')" = "x86_64"
+      - name: Smoke test the packaged Intel app without radio
+        run: |
+          python - <<'PYTHON'
+          import subprocess
+          subprocess.run(['dist/The Sitdown BBS.app/Contents/MacOS/The Sitdown BBS',
+                          '--sitdown-smoke-test'], check=True, timeout=45)
+          PYTHON
       - name: Create unsigned test DMG
         run: |
           mkdir -p dmg-staging
