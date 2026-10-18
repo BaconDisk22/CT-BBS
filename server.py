@@ -39,16 +39,11 @@ js8call_handler.setFormatter(js8call_formatter)
 js8call_logger.addHandler(js8call_handler)
 
 def display_banner():
-    banner = """
-████████╗ ██████╗██████╗       ██████╗ ██████╗ ███████╗
-╚══██╔══╝██╔════╝╚════██╗      ██╔══██╗██╔══██╗██╔════╝
-   ██║   ██║      █████╔╝█████╗██████╔╝██████╔╝███████╗
-   ██║   ██║     ██╔═══╝ ╚════╝██╔══██╗██╔══██╗╚════██║
-   ██║   ╚██████╗███████╗      ██████╔╝██████╔╝███████║
-   ╚═╝    ╚═════╝╚══════╝      ╚═════╝ ╚═════╝ ╚══════╝
-Meshtastic Version
-"""
-    print(banner)
+    """Show Sitdown branding without altering upstream attribution."""
+    print("THE SITDOWN BBS")
+    print("North Jersey Communications Division")
+    print("Meshtastic bulletin board server")
+
 
 def main():
     display_banner()
@@ -65,7 +60,7 @@ def main():
     interface.allowed_nodes = system_config['allowed_nodes']
     interface.sitdown = LocalUtilities(interface, system_config['config'])
 
-    logging.info(f"TC²-BBS is running on {system_config['interface_type']} interface...")
+    logging.info(f"THE SITDOWN BBS is running on {system_config['interface_type']} interface...")
 
     initialize_database()
 
