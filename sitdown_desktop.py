@@ -128,8 +128,6 @@ class SitdownApp:
         self.banner = tk.Canvas(header, height=220, bg=c['background'], highlightthickness=0)
         self.banner.pack(fill='x')
         self.banner.bind('<Configure>', self.render_banner)
-        self.root.bind('<Configure>', lambda event: self.banner.configure(
-            height=max(100, min(220, event.height - 700))) if event.widget is self.root else None, add='+')
         navigation = tk.Frame(self.root, bg=c["panel"], pady=7)
         navigation.pack(fill="x", padx=12, pady=(2, 6))
         self.navigation = navigation
