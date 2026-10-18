@@ -10,7 +10,7 @@ import threading
 import time
 
 NODE_PATTERN = re.compile(r"Received message from user '([^']+)' \((![0-9a-fA-F]+)\)")
-READY_PATTERN = re.compile(r"(?:BBS is running on|TC²-BBS is running on)", re.I)
+READY_PATTERN = re.compile(r"(?:THE SITDOWN BBS|TC²-BBS|BBS) is running on", re.I)
 
 
 class ServerSupervisor:
