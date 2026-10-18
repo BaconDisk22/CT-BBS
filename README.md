@@ -106,6 +106,15 @@ The current desktop dashboard uses Italian red and green accents, dark charcoal 
 
 ![The Sitdown BBS desktop dashboard in demo mode — demonstration data, no radio connection](docs/images/desktop-preview-demo.png)
 
+<details>
+<summary>Operator desks, full node lookup, and opt-in settings (demo screenshots)</summary>
+
+![Announcement desk — demonstration only](docs/images/bbs-preview-demo.png)
+![Full node lookup — demonstration node](docs/images/nodes-preview-demo.png)
+![Startup broadcast settings — disabled by default](docs/images/settings-preview-demo.png)
+
+</details>
+
 [Desktop screenshot automation](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/readme-desktop-screenshot.yml) · [Intel Mac releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases)
 
 ### 📦 Download the latest Intel Mac build

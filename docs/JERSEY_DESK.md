@@ -60,7 +60,8 @@ silhouette. Screenshots are captured from demo mode and labeled accordingly.
 They are not evidence of a connected radio.
 
 CI runs unit tests, real Tk layout/navigation checks on Intel macOS, captures the
-app, and packages an x86_64 app/DMG. These checks do not prove a physical radio
+app, and packages an x86_64 app/DMG. It also launches the packaged app in isolated
+demo mode to verify bundled imports and Tk pages without a radio. These checks do not prove a physical radio
 works with the packaged app. Before a release, test the actual DMG on an Intel Mac:
 launch it, connect to your TCP Meshtastic radio, send/receive a DM, read/write a
 board message, restart/disconnect, and verify each opt-in feature independently.
