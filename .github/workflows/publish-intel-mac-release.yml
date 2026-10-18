@@ -53,7 +53,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt pyserial pyinstaller pillow
+          python -m pip install -r requirements.txt -r requirements-mqtt.txt pyserial pyinstaller pillow
       - name: Validate source and tests
         run: |
           test "$(uname -m)" = "x86_64"
@@ -76,7 +76,7 @@ jobs:
           python -m PyInstaller --noconfirm --clean --windowed --onedir \
             --name "The Sitdown BBS" --icon build/sitdown.icns \
             --add-data "example_config.ini:." \
-            --collect-all meshtastic --collect-all pubsub sitdown_desktop.py
+            --hidden-import paho.mqtt.client --collect-all meshtastic --collect-all pubsub sitdown_desktop.py
           test -d "dist/The Sitdown BBS.app"
           lipo -archs "dist/The Sitdown BBS.app/Contents/MacOS/The Sitdown BBS" | grep -q x86_64
       - name: Build release DMG and checksums

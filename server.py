@@ -81,6 +81,7 @@ def main():
     if js8call_client.db_conn:
         js8call_client.connect()
 
+    interface.sitdown.mqtt.start()
     interface.sitdown.startup()
 
     try:
@@ -89,6 +90,7 @@ def main():
 
     except KeyboardInterrupt:
         logging.info("Shutting down the server...")
+        interface.sitdown.mqtt.stop()
         interface.close()
         if js8call_client.connected:
             js8call_client.close()
