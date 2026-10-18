@@ -1,4 +1,5 @@
 import queue
+import time
 import unittest
 from unittest.mock import Mock
 
@@ -27,6 +28,36 @@ class SupervisorTests(unittest.TestCase):
         self.assertTrue(supervisor.start())
         self.assertFalse(supervisor.start())
         factory.assert_called_once()
+
+    def test_observed_rx_updates_activity_and_node(self):
+        fake = Mock()
+        fake.poll.return_value = None
+        fake.stdout = iter(["INFO - Received message from user 'JERZ' (!abcd1234) to BBS: hello\n"])
+        supervisor = ServerSupervisor(["python", "server.py"], ".", factory=Mock(return_value=fake))
+        self.assertTrue(supervisor.start())
+        # The reader runs on a daemon thread; wait briefly for its completion.
+        deadline = time.monotonic() + 2
+        while time.monotonic() < deadline and supervisor.last_rx_at is None:
+            time.sleep(0.01)
+        self.assertIsNotNone(supervisor.last_rx_at)
+        self.assertIn("!abcd1234", supervisor.nodes)
+        self.assertIn(("activity", "rx"), supervisor.poll_events())
+
+    def test_restart_resets_stale_radio_activity(self):
+        first = Mock()
+        first.poll.return_value = 1
+        first.stdout = iter([])
+        second = Mock()
+        second.poll.return_value = None
+        second.stdout = iter([])
+        factory = Mock(side_effect=[first, second])
+        supervisor = ServerSupervisor(["python", "server.py"], ".", factory=factory)
+        supervisor.start()
+        supervisor.last_rx_at = time.time()
+        supervisor.nodes["!abcd1234"] = ("JERZ", time.time())
+        self.assertTrue(supervisor.start())
+        self.assertIsNone(supervisor.last_rx_at)
+        self.assertEqual(supervisor.nodes, {})
 
     def test_uptime_when_stopped(self):
         supervisor = ServerSupervisor(["python"], ".")
