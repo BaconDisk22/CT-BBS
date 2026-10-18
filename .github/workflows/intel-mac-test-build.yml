@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sitdown-pr-desktop-preview
-          path: docs/images/desktop-preview-demo.png
+          path: docs/images/*preview-demo.png
           if-no-files-found: error
       - name: Generate Jersey app icon
         run: |

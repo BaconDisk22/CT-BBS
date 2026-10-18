@@ -1,5 +1,21 @@
 <div align="center">
 
+
+## Jersey desktop and operator desks
+
+The dashboard now has working tab pages for BBS utilities, local mail and boards,
+radio status, full node lookup, settings, and About. Admin announcements and an
+optional startup broadcast use the existing radio connection. Weather works with
+an offline local report; internet weather and MQTT are separately **off by default**.
+
+Read the [configuration and command guide](docs/JERSEY_DESK.md) and
+[upstream audit](docs/UPSTREAM_AUDIT.md). This is a staged change: local utilities,
+opt-in services, then desktop integration. Mac builds are test artifacts until
+validated with a physical radio on an Intel Mac.
+
+![Jersey app icon](docs/images/app-icon.png)
+
+
 # 🤌 THE SITDOWN BBS
 ### 🇮🇹 North Jersey Communications Division 🇮🇹
 

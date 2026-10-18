@@ -34,6 +34,18 @@ for x in range(115,920,35):
 # Italian tricolor stripes, subtle beneath the bridge.
 for i,color in enumerate(("#008C45","#F5F5F0","#C62828")):
     d.rectangle((95+i*280,744,95+(i+1)*280,780),fill=color)
+# Original simplified New Jersey silhouette with the tricolor.
+mask = Image.new('L', (S, S), 0)
+md = ImageDraw.Draw(mask)
+md.polygon([(545,245),(650,290),(622,360),(655,425),(612,510),(573,575),
+            (543,650),(488,692),(455,653),(473,605),(438,557),(462,495),
+            (493,444),(478,385),(510,340),(515,283)], fill=255)
+flag = Image.new('RGBA', (S, S), '#F5F5F0')
+fd = ImageDraw.Draw(flag)
+fd.rectangle((0,0,510,S), fill='#008C45')
+fd.rectangle((575,0,S,S), fill='#C62828')
+img.paste(flag, (0,0), mask)
+d = ImageDraw.Draw(img)
 # Big recognizable BBS monogram with contrast for Dock sizes.
 try:
     font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 110)
@@ -47,3 +59,7 @@ d.text((512,185),"THE SITDOWN",font=small,anchor="mm",fill="#F5F5F0",stroke_widt
 out=Path("build")
 out.mkdir(exist_ok=True)
 img.save(out/"sitdown-icon.png")
+
+preview = Path("docs/images/app-icon.png")
+preview.parent.mkdir(parents=True, exist_ok=True)
+img.save(preview)

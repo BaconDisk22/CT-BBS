@@ -86,10 +86,23 @@ class DesktopWindowTests(unittest.TestCase):
             control = next(c for c in self.app.nav_buttons if c.cget("text").split()[-1] == title)
             control.event_generate("<Button-1>")
             self.root.update()
-            windows = [w for w in self.root.winfo_children() if isinstance(w, tk.Toplevel)]
-            self.assertTrue(windows, title)
-            for window in windows:
-                window.destroy()
+            self.assertIsNotNone(self.app.active_page)
+            self.assertTrue(self.app.active_page.winfo_ismapped())
+
+    def test_each_page_opens_in_demo_and_returns_home(self):
+        self.app.demo.set(True)
+        self.app.start()
+        for title in ('BBS', 'MESSAGES', 'BOARDS', 'RADIO', 'NODES', 'SETTINGS', 'ABOUT'):
+            self.app.select_page(title)
+            self.root.update()
+            self.assertTrue(self.app.active_page.winfo_ismapped())
+        self.app.select_page('HOME')
+        self.root.update()
+        self.assertTrue(self.app.home_page.winfo_ismapped())
+        with patch.object(self.app, 'show_info'):
+            self.app.supervisor = Mock()
+            self.app.control_request('announce', channel=0, text='Demo')
+            self.app.supervisor.request.assert_not_called()
 
     def test_info_is_themed_nonblocking_and_keyboard_dismissible(self):
         for key in ("<Escape>", "<Return>", "<space>"):

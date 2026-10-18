@@ -26,3 +26,13 @@ python -m unittest discover -s tests -p 'test_sitdown_commands.py'
 ```
 
 Radio integration and packaging still require hardware/runtime validation.
+
+
+## Operator utilities
+
+- `/node <ID or name>` — full radio node lookup.
+- `/weather` — offline report or explicitly enabled internet weather.
+- `/wire` — optional MQTT activity, separate from radio RX.
+- `/announce <channel> <text>` — configured administrator nodes only.
+
+See [configuration details](docs/JERSEY_DESK.md).
