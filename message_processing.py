@@ -61,6 +61,14 @@ def process_message(sender_id, message, interface, is_sync_message=False):
 
     bbs_nodes = interface.bbs_nodes
 
+    # Never reinterpret mail, bulletin text, or peer sync payloads.
+    if not is_sync_message and (not state or state.get('command') in {'MENU', 'MAIN_MENU'}):
+        service = getattr(interface, 'sitdown', None)
+        response = service.command(message, sender_id) if service else None
+        if response is not None:
+            send_message(response, sender_id, interface)
+            return
+
     # Friendly slash commands route to existing, tested handlers.
     shortcut = resolve_shortcut(message, state)
     if shortcut is not None and not is_sync_message:
