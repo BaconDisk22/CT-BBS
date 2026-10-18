@@ -64,7 +64,7 @@ jobs:
           python -m PyInstaller --noconfirm --clean --windowed --onedir \
             --name "The Sitdown BBS" \
             --icon build/sitdown.icns \
-            --add-data "example_config.ini:." \
+            --add-data "example_config.ini:." --add-data "assets:assets" \
             --hidden-import paho.mqtt.client --collect-all meshtastic \
             --collect-all pubsub \
             sitdown_desktop.py

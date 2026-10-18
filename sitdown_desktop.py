@@ -21,8 +21,8 @@ import zipfile
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 DATA = Path.home() / ".sitdown-bbs"
 CONFIG = DATA / "launcher.json"
-THEME = {"background": "#121212", "panel": "#242424", "primary": "#C62828",
-         "connected": "#008C45", "text": "#F5F5F0", "highlight": "#F4B942"}
+THEME = {"background": "#030a0c", "panel": "#061013", "primary": "#ed001b",
+         "connected": "#19e333", "text": "#F5F5F0", "highlight": "#d3dde0"}
 COMMANDS = [
     ("/sitdown", "Main menu"), ("/help", "Quick help"),
     ("/mail", "Check your mail"), ("/boards", "The Social Club"),
@@ -58,7 +58,7 @@ class SitdownApp:
         self.status = tk.StringVar(value="Stopped")
         self.colors = THEME
         self.root.title("THE SITDOWN BBS | North Jersey Communications Division")
-        self.root.geometry("1280x900")
+        self.root.geometry("1160x940")
         self.root.minsize(960, 650)
         self.root.configure(bg=THEME["background"])
         style = ttk.Style(self.root)
@@ -121,16 +121,15 @@ class SitdownApp:
             return tk.Label(parent, text=text, font=("Helvetica", size, "bold"),
                             fg=color or c["text"], bg=c["background"])
         button = self.styled_button
-        # A single full-width banner keeps the skyline and title together on Intel Macs.
-        header = tk.Frame(self.root, bg="#071017")
-        header.pack(fill="x", padx=18, pady=(8, 4))
-        skyline = tk.Canvas(header, height=112, bg="#071017",
-                            highlightthickness=0, bd=0)
-        skyline.pack(fill="x", expand=True)
-        skyline.bind("<Configure>", lambda event: self.draw_skyline(
-            skyline, event.width, event.height))
+        from PIL import Image
+        self.banner_source = Image.open(ROOT / 'assets' / 'jersey-banner.png').convert('RGB')
+        header = tk.Frame(self.root, bg=c['background'])
+        header.pack(fill='x', padx=12, pady=(8, 0))
+        self.banner = tk.Canvas(header, height=220, bg=c['background'], highlightthickness=0)
+        self.banner.pack(fill='x')
+        self.banner.bind('<Configure>', self.render_banner)
         navigation = tk.Frame(self.root, bg=c["panel"], pady=7)
-        navigation.pack(fill="x", padx=18, pady=(0, 7))
+        navigation.pack(fill="x", padx=12, pady=(2, 6))
         self.navigation = navigation
         self.nav_buttons = []
         for title, action in [
@@ -146,7 +145,7 @@ class SitdownApp:
             action = lambda name=title.split()[-1]: self.select_page(name)
             control = self.styled_button(
                 navigation, title, action,
-                c["primary"] if "HOME" in title else c["background"],
+                c["primary"] if "HOME" in title else c["panel"],
                 compact=True)
             self.nav_buttons.append(control)
         navigation.bind("<Configure>", self.layout_navigation)
@@ -154,11 +153,8 @@ class SitdownApp:
         self.page_host.pack(fill='both', expand=True)
         self.home_page = tk.Frame(self.page_host, bg=c['background'])
         self.home_page.pack(fill='both', expand=True)
-        tk.Frame(self.home_page, bg=c["connected"], height=4).pack(fill="x", padx=18)
-        tk.Frame(self.home_page, bg=c["primary"], height=4).pack(fill="x", padx=18, pady=(3, 0))
-        label(self.home_page, "Ayyy, pull up a chair. We gotta talk.", 12, c["highlight"]).pack(pady=(2, 10))
         cards = tk.Frame(self.home_page, bg=c["background"])
-        cards.pack(fill="x", padx=18, pady=(0, 4))
+        cards.pack(fill="x", padx=8, pady=(0, 4))
         for column in range(3):
             cards.grid_columnconfigure(column, weight=1, uniform="jersey")
 
@@ -167,19 +163,20 @@ class SitdownApp:
                              highlightbackground="#24404A", highlightthickness=1)
             frame.grid(row=0, column=column, sticky="nsew", padx=5, pady=4)
             tk.Label(frame, text=title, bg=c["panel"], fg=c["highlight"],
-                     font=("Helvetica", 13, "bold")).pack(anchor="w", pady=(0, 5))
+                     font=("Helvetica", 12, "bold")).pack(anchor="w", pady=(0, 5))
             return frame
 
-        radio = card(0, "◉  CONNECTION STATUS")
-        tk.Radiobutton(radio, text="USB / Serial", variable=self.connection, value="serial",
-                       bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w")
-        tk.Radiobutton(radio, text="TCP / Network", variable=self.connection, value="tcp",
-                       bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w")
+        radio = card(0, "Connection Status")
+        tk.Label(radio, textvariable=self.radio_activity, bg=c['panel'], fg=c['connected'],
+                 font=('Helvetica', 11, 'bold'), wraplength=300, justify='left').pack(anchor='w', pady=(0, 8))
+        transport = tk.Frame(radio, bg=c['panel']); transport.pack(fill='x')
+        for title, value in (('USB / Serial', 'serial'), ('TCP / Network', 'tcp')):
+            tk.Radiobutton(transport, text=title, variable=self.connection, value=value,
+                           bg=c['panel'], fg=c['text'], selectcolor='#17262b').pack(side='left')
         tk.Label(radio, text="Device path or radio IP", bg=c["panel"], fg=c["text"]).pack(anchor="w", pady=(10, 2))
-        tk.Entry(radio, textvariable=self.address, bg=c["background"], fg=c["text"],
-                 insertbackground=c["text"], relief="flat").pack(fill="x", ipady=7)
-        self.styled_button(radio, "Find USB Ports", self.list_ports, c["background"]).pack(
-            anchor="w", pady=(10, 0))
+        ttk.Entry(radio, textvariable=self.address, style='Desk.TEntry').pack(fill='x')
+        self.styled_button(radio, "Find USB Ports", self.list_ports, "#233139").pack(
+            fill="x", pady=(8, 0))
         self.connection_summary = tk.StringVar()
         tk.Label(radio, textvariable=self.connection_summary, bg=c["panel"],
                  fg=c["text"], justify="left", wraplength=280).pack(anchor="w", pady=(8, 0))
@@ -190,7 +187,11 @@ class SitdownApp:
                  bg=c["panel"], fg=c["highlight"], wraplength=275,
                  justify="left").pack(anchor="w", pady=(10, 0))
 
-        server = card(1, "▣  BBS SERVER")
+        tk.Label(radio, textvariable=self.node_count, bg=c['panel'], fg=c['text']).pack(anchor='w', pady=3)
+        tk.Label(radio, textvariable=self.uptime, bg=c['panel'], fg=c['text']).pack(anchor='w', pady=3)
+        self.styled_button(radio, 'Disconnect', self.stop, c['primary']).pack(fill='x', pady=(10, 0))
+
+        server = card(1, "BBS Server")
         self.status_row = tk.Frame(server, bg=c["panel"])
         self.status_row.pack(fill="x", pady=(0, 8))
         self.status_dot = tk.Label(self.status_row, text="●", bg=c["panel"],
@@ -200,62 +201,42 @@ class SitdownApp:
                  fg=c["text"], wraplength=230, justify="left").pack(side="left")
         self.status.trace_add("write", self.refresh_status_indicator)
         self.refresh_status_indicator()
-        tk.Label(server, textvariable=self.radio_activity, bg=c["panel"], fg=c["highlight"], wraplength=250).pack(anchor="w")
-        tk.Label(server, textvariable=self.node_count, bg=c["panel"], fg=c["text"]).pack(anchor="w")
-        tk.Label(server, textvariable=self.uptime, bg=c["panel"], fg=c["text"]).pack(anchor="w", pady=(4, 10))
-        self.styled_button(server, "START THE SITDOWN", self.start, c["connected"]).pack(fill="x", pady=3)
-        self.styled_button(server, "STOP SERVER", self.stop, c["primary"]).pack(fill="x", pady=3)
-        self.styled_button(server, "RESTART SERVER", self.restart, c["background"]).pack(fill="x", pady=3)
-        tk.Checkbutton(server, text="Demo mode (no radio)", variable=self.demo,
-                       bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w", pady=(8, 0))
-        tk.Checkbutton(server, text="Restart on crash", variable=self.auto_restart,
-                       bg=c["panel"], fg=c["text"], selectcolor=c["background"]).pack(anchor="w")
+        self.styled_button(server, 'Start BBS Server', self.start, '#233139').pack(fill='x', pady=3)
+        self.toggle_row(server, 'Auto start at launch', self.auto_start)
+        self.toggle_row(server, 'Restart on crash', self.auto_restart)
+        self.toggle_row(server, 'Demo — no radio', self.demo)
+        self.styled_button(server, '↻  Restart Server', self.restart, '#233139').pack(fill='x', pady=(10, 3))
+        self.styled_button(server, '■  Stop Server', self.stop, c['primary']).pack(fill='x', pady=3)
+        tk.Label(server, text='Process status is separate from radio RX.', bg=c['panel'], fg='#a6b4b8',
+                 wraplength=280, justify='left').pack(anchor='w', pady=8)
 
-        tk.Checkbutton(server, text="Start BBS when app opens", variable=self.auto_start,
-                       bg=c['panel'], fg=c['text'], selectcolor=c['background']).pack(anchor='w')
-
-        personality = card(2, "◈  JERSEY PERSONALITY")
-        tk.Label(personality, text="Desktop greeting style", bg=c["panel"],
-                 fg=c["text"]).pack(anchor="w")
-        for title, mode in (("Clean Jersey", "clean"), ("Jersey Attitude", "attitude"),
-                            ("Full Jersey Mouth", "uncensored")):
-            tk.Radiobutton(personality, text=title, variable=self.desktop_mouth, value=mode,
-                           bg=c["panel"], fg=c["text"],
-                           selectcolor=c["background"]).pack(anchor="w")
-        self.styled_button(personality, "PREVIEW GREETING", lambda: self.show_info(
-            "Jersey Personality", Personality(self.desktop_mouth.get()).message("welcome")), c['background']).pack(fill='x', pady=4)
-        self.styled_button(personality, "SAVE SETTINGS", self.save, c["connected"]).pack(
-            fill="x", pady=(12, 4))
-        self.styled_button(personality, "THE FAMILY BUSINESS", self.settings,
-                           c["background"]).pack(fill="x", pady=4)
-        tk.Label(personality, text="Public radio style is configured separately. "
-                 "Configure startup broadcasts and public greeting style in Settings.",
-                 bg=c["panel"], fg=c["highlight"], wraplength=285,
-                 justify="left").pack(anchor="w", pady=(8, 0))
-
-        tools = tk.Frame(self.home_page, bg=c["background"])
-        tools.pack(fill="x", padx=23, pady=(0, 4))
-        for title, action in (("THE PLAYBOOK", self.commands),
-                              ("THE BOOKS", self.backup), ("BBS DESK", lambda: self.select_page("BBS")), ("WHO'S WHO", self.show_nodes)):
-            self.styled_button(tools, title, action, c["panel"]).pack(side="left", padx=(0, 8))
+        personality = card(2, "Jersey Personality • Attitude Adjustah")
+        tk.Label(personality, text='Desktop greeting style', bg=c['panel'], fg='#a6b4b8').pack(anchor='w', pady=5)
+        choices = tk.Frame(personality, bg=c['panel']); choices.pack(fill='x')
+        for title, mode in (('CLEAN', 'clean'), ('JERSEY', 'attitude'), ('HEAVY', 'uncensored')):
+            control = self.styled_button(choices, title, lambda m=mode: self.desktop_mouth.set(m), '#233139', compact=True)
+            control.pack(side='left', expand=True, fill='x', padx=2)
+            def selected(*_, button=control, value=mode):
+                button.configure(bg=c['primary'] if self.desktop_mouth.get() == value else '#233139')
+            self.desktop_mouth.trace_add('write', selected); selected()
+        self.greeting_preview = tk.StringVar()
+        def preview(*_):
+            self.greeting_preview.set(Personality(self.desktop_mouth.get()).message('welcome'))
+        self.desktop_mouth.trace_add('write', preview); preview()
+        tk.Label(personality, text='Preview', bg=c['panel'], fg=c['text']).pack(anchor='w', pady=(12, 4))
+        tk.Label(personality, textvariable=self.greeting_preview, font=('Menlo', 11), bg='#020b0d', fg=c['text'],
+                 wraplength=275, justify='left', anchor='nw', height=4, padx=8, pady=8,
+                 highlightbackground='#1e3035', highlightthickness=1).pack(fill='x')
+        self.styled_button(personality, 'Save Settings', self.save, '#233139').pack(fill='x', pady=(10, 3))
+        self.styled_button(personality, 'Public Broadcast Settings', self.settings, '#233139').pack(fill='x', pady=3)
         log_header = tk.Frame(self.home_page, bg=c["panel"], padx=12, pady=9,
                               highlightbackground="#24404A", highlightthickness=1)
         log_header.pack(fill="x", padx=20, pady=(10, 0))
-        label(log_header, "▤  SERVER LOG  •  THE BACKROOM", 12, c["highlight"]).pack(side="left")
-        button(log_header, "Save Log", self.export_log, c["panel"]).pack(side="right", padx=(8, 0))
-        button(log_header, "Copy Diagnostics", self.copy_diagnostics, c["panel"]).pack(
-            side="right", padx=(8, 0))
-        button(log_header, "Clear Log", self.clear_log, c["panel"]).pack(side="right")
-        button(log_header, "Nodes", self.show_nodes, c["panel"]).pack(side="right", padx=(0, 8))
+        label(log_header, '▤  Server Log', 12, c['text']).pack(side='left')
         self.log_query = tk.StringVar()
-        search_row = tk.Frame(self.home_page, bg=c["panel"], padx=12, pady=7)
-        search_row.pack(fill="x", padx=20, pady=(8, 0))
-        tk.Label(search_row, text="SEARCH LOG", bg=c["panel"], fg=c["highlight"],
-                 font=("Helvetica", 10, "bold")).pack(side="left")
-        tk.Entry(search_row, textvariable=self.log_query, bg=c["panel"], fg=c["text"],
-                 insertbackground=c["text"], relief="flat").pack(side="left", fill="x", expand=True, padx=8)
-        button(search_row, "Find Next", self.find_log, c["panel"]).pack(side="right")
-
+        for title, action in (('Clear Log', self.clear_log), ('Save Log', self.export_log), ('Find', self.find_log)):
+            self.styled_button(log_header, title, action, '#233139', compact=True).pack(side='right', padx=3)
+        ttk.Entry(log_header, textvariable=self.log_query, width=20, style='Desk.TEntry').pack(side='right', padx=5)
 
         # Read-only footer: process status is not proof of a live radio link.
         footer = tk.Frame(self.home_page, bg=c["panel"], padx=14, pady=7,
@@ -264,19 +245,47 @@ class SitdownApp:
         tk.Label(footer, text="THE SITDOWN BBS  •  NORTH JERSEY",
                  bg=c["panel"], fg=c["highlight"],
                  font=("Helvetica", 10, "bold")).pack(side="left")
+        self.styled_button(footer, 'The Books', self.backup, c['panel'], compact=True).pack(side='left', padx=8)
+        self.styled_button(footer, 'Diagnostics', self.copy_diagnostics, c['panel'], compact=True).pack(side='left')
         tk.Label(footer, textvariable=self.status, bg=c["panel"], fg=c["text"],
                  font=("Helvetica", 10)).pack(side="right", padx=(14, 0))
         tk.Label(footer, text="SERVER PROCESS:", bg=c["panel"], fg=c["highlight"],
                  font=("Helvetica", 10, "bold")).pack(side="right")
-        self.output = tk.Text(self.home_page, bg="#0B141A", fg=c["text"], insertbackground=c["text"],
+        self.output = tk.Text(self.home_page, bg="#01090b", fg="#42ed50", insertbackground=c["text"],
                               wrap="word", relief="flat", state="disabled", height=7,
                               font=("Menlo", 11), padx=16, pady=12,
                               highlightbackground="#24404A", highlightthickness=1)
         self.output.pack(fill="both", expand=True, padx=20, pady=(5, 5))
         self.output.tag_configure("event_error", foreground="#FF8B85")
-        self.output.tag_configure("event_ready", foreground="#82D9A0")
+        self.output.tag_configure("event_ready", foreground="#27ff3d")
         self.log(Personality(self.desktop_mouth.get(), self.public_mouth.get(), self.public_profanity.get()).message("welcome"))
         self.log("Pick a radio, or check Demo mode.")
+
+    def render_banner(self, event):
+        from PIL import Image, ImageTk
+        self.banner_photo = ImageTk.PhotoImage(self.banner_source.resize(
+            (max(1, event.width), max(1, event.height)), Image.Resampling.LANCZOS))
+        self.banner.delete('all')
+        self.banner.create_image(0, 0, anchor='nw', image=self.banner_photo)
+
+    def toggle_row(self, parent, title, variable):
+        row = tk.Frame(parent, bg=self.colors['panel']); row.pack(fill='x', pady=6)
+        tk.Label(row, text=title, bg=self.colors['panel'], fg=self.colors['text']).pack(side='left')
+        toggle = tk.Canvas(row, width=44, height=24, bg=self.colors['panel'], highlightthickness=0, takefocus=True, cursor='hand2')
+        toggle.pack(side='right')
+        def draw(*_):
+            toggle.delete('all')
+            color = '#16cb37' if variable.get() else '#34464d'
+            toggle.create_oval(1, 2, 22, 23, fill=color, outline=color)
+            toggle.create_oval(22, 2, 43, 23, fill=color, outline=color)
+            toggle.create_rectangle(11, 2, 33, 23, fill=color, outline=color)
+            x = 23 if variable.get() else 3
+            toggle.create_oval(x, 4, x+17, 21, fill='white', outline='white')
+        def change(_=None): variable.set(not variable.get())
+        for event in ('<Button-1>', '<space>', '<Return>'): toggle.bind(event, change)
+        toggle.bind('<FocusIn>', lambda _: toggle.configure(highlightthickness=1, highlightbackground='#ffffff'))
+        toggle.bind('<FocusOut>', lambda _: toggle.configure(highlightthickness=0))
+        variable.trace_add('write', draw); draw()
 
     def config_path(self):
         return (DATA if getattr(sys, 'frozen', False) else ROOT) / 'config.ini'
