@@ -36,6 +36,7 @@ class SitdownApp:
         self.auto_restart = tk.BooleanVar(value=False)
         self.node_count = tk.StringVar(value='Observed nodes: 0')
         self.uptime = tk.StringVar(value='Uptime: 0s')
+        self.radio_activity = tk.StringVar(value='Radio activity: Not observed')
         self.demo = tk.BooleanVar(value=False)
         self.connection = tk.StringVar(value="serial")
         self.address = tk.StringVar()
@@ -170,6 +171,7 @@ class SitdownApp:
                  fg=c["text"], wraplength=230, justify="left").pack(side="left")
         self.status.trace_add("write", self.refresh_status_indicator)
         self.refresh_status_indicator()
+        tk.Label(server, textvariable=self.radio_activity, bg=c["panel"], fg=c["highlight"], wraplength=250).pack(anchor="w")
         tk.Label(server, textvariable=self.node_count, bg=c["panel"], fg=c["text"]).pack(anchor="w")
         tk.Label(server, textvariable=self.uptime, bg=c["panel"], fg=c["text"]).pack(anchor="w", pady=(4, 10))
         self.styled_button(server, "START THE SITDOWN", self.start, c["connected"]).pack(fill="x", pady=3)
@@ -470,6 +472,7 @@ class SitdownApp:
             return
         if self.demo.get():
             self.status.set("Demo running — no radio")
+            self.radio_activity.set("Radio activity: Demo only")
             self.log("DEMO: No radio messages are sent.")
             self.retry_count = 0
             return
@@ -495,6 +498,7 @@ class SitdownApp:
             self.supervisor = ServerSupervisor(cmd, DATA if getattr(sys, "frozen", False) else ROOT)
             self.supervisor.start()
             self.status.set("Starting...")
+            self.radio_activity.set("Radio activity: Awaiting messages")
             self.log("Starting The Sitdown BBS...")
         except OSError as exc:
             self.supervisor = None
@@ -509,9 +513,14 @@ class SitdownApp:
                     self.log(value)
                 elif kind == "state":
                     self.status.set(value)
+                elif kind == "activity":
+                    self.radio_activity.set("Radio RX observed in BBS logs")
                 elif kind == "node":
                     self.node_count.set(f"Observed nodes: {len(monitor.nodes)}")
             if monitor.running:
+                if monitor.last_rx_at is not None:
+                    age = max(0, int(time.time() - monitor.last_rx_at))
+                    self.radio_activity.set(f"Radio RX observed {age}s ago")
                 self.uptime.set(f"Uptime: {monitor.uptime_seconds()}s")
             elif not monitor.stopping and self.restart_at is None:
                 code = monitor.process.poll() if monitor.process else "unknown"
@@ -523,6 +532,7 @@ class SitdownApp:
                     self.restart_at = time.monotonic() + delay
                     self.log(f"Retrying process in {delay}s (attempt {self.retry_count}).")
                 self.supervisor = None
+                self.radio_activity.set("Radio activity: Process stopped")
         if self.restart_at is not None and time.monotonic() >= self.restart_at:
             self.restart_at = None
             self.start()
@@ -546,7 +556,8 @@ class SitdownApp:
             f"Server process running: {bool(monitor and monitor.running)}",
             f"Observed nodes: {len(monitor.nodes) if monitor else 0}",
             f"Uptime: {monitor.uptime_seconds() if monitor else 0}s",
-            "Radio connection verified: Not determined by desktop process monitor",
+            f"Radio activity: {self.radio_activity.get()}",
+            "Radio connection verified: Log-observed activity only, not continuous link health",
         ]
         self.root.clipboard_clear()
         self.root.clipboard_append("\n".join(details))
@@ -560,6 +571,7 @@ class SitdownApp:
             self.supervisor.stop()
             self.supervisor = None
         self.status.set("Stopped")
+        self.radio_activity.set("Radio activity: Process stopped")
         self.uptime.set("Uptime: 0s")
         self.log("Fuggedaboutit. Server stopped.")
 
