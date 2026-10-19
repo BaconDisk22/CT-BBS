@@ -1,2 +1,4 @@
 meshtastic
 pypubsub
+
+pillow>=10,<14
