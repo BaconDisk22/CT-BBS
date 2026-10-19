@@ -505,7 +505,27 @@ class SitdownApp:
                 self.show_info('Settings saved', 'Restart the server to apply these settings.')
             except (ValueError, OSError) as exc:
                 self.show_info('Settings not saved', str(exc))
-        self.styled_button(page, 'SAVE — APPLY ON NEXT SERVER START', save, THEME['connected']).pack(pady=10)
+        guide = (
+                    "CENTRALNJ / TWO-WAY RADIO SETUP\n"
+                    "1. Configure the CentralNJ channel and its PSK on your Meshtastic radio.\n"
+                    "2. Configure the radio MQTT broker: mqtt.meshtastic.org.\n"
+                    "3. Enter broker credentials on the radio, not in a public repository.\n"
+                    "4. Enable MQTT uplink and downlink for the CentralNJ channel on the radio.\n"
+                    "5. Set the radio MQTT root topic to the correct regional topic.\n"
+                    "6. Connect the radio to this BBS by USB or TCP and test with a small message.\n\n"
+                    "The MQTT counter above is separate: it only counts incoming broker "
+                    "traffic and cannot decrypt or send Meshtastic messages. "
+                    "Leave it disabled unless you explicitly want monitoring. "
+                    "Avoid subscribing broadly to msh/US/# on limited hardware; "
+                    "start with the narrowest authorized topic. "
+                    "Two-way delivery requires radio and channel configuration; "
+                    "this screen does not activate radio MQTT automatically."
+                )
+        self.styled_button(page, 'SAVE — APPLY ON NEXT SERVER START',
+                           save, THEME['connected'], compact=True).pack(side='bottom', pady=6)
+        self.styled_button(page, 'CENTRALNJ SETUP GUIDE',
+                           lambda: self.show_info('CentralNJ MQTT / Radio Setup', guide),
+                           THEME['primary'], compact=True).pack(side='bottom', pady=4)
 
     def layout_navigation(self, event):
         """Wrap measured controls so every action survives font/window resizing."""
