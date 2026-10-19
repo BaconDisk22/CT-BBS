@@ -159,8 +159,10 @@ class SitdownApp:
         navigation.bind("<Configure>", self.layout_navigation)
         self.page_host = tk.Frame(self.root, bg=c['background'])
         self.page_host.pack(fill='both', expand=True)
+        self.page_host.grid_rowconfigure(0, weight=1)
+        self.page_host.grid_columnconfigure(0, weight=1)
         self.home_page = tk.Frame(self.page_host, bg=c['background'])
-        self.home_page.pack(fill='both', expand=True)
+        self.home_page.grid(row=0, column=0, sticky='nsew')
         cards = tk.Frame(self.home_page, bg=c["background"])
         cards.pack(fill="x", padx=8, pady=(0, 4))
         for column in range(3):
@@ -330,12 +332,13 @@ class SitdownApp:
         if self.active_page is not None:
             self.active_page.destroy()
             self.active_page = None
-        self.home_page.pack_forget()
         if title == 'HOME':
-            self.home_page.pack(fill='both', expand=True)
+            self.home_page.grid(row=0, column=0, sticky='nsew')
+            self.home_page.tkraise()
             return
+        self.home_page.grid_remove()
         page = tk.Frame(self.page_host, bg=THEME['background'], padx=24, pady=15)
-        page.pack(fill='both', expand=True)
+        page.grid(row=0, column=0, sticky='nsew')
         self.active_page = page
         tk.Label(page, text=title + '  /  THE SITDOWN', font=('Helvetica', 20, 'bold'),
                  bg=THEME['background'], fg=THEME['highlight']).pack(anchor='w', pady=(0, 15))
@@ -957,9 +960,13 @@ if __name__ == "__main__":
             app = SitdownApp(root)
             app.demo.set(True)
             app.start()
-            for page in ('BBS', 'NODES', 'SETTINGS', 'HOME'):
+            for page in ('BBS', 'MESSAGES', 'BOARDS', 'NODES', 'SETTINGS', 'HOME'):
                 app.select_page(page)
                 root.update()
+                if page == 'HOME':
+                    assert app.home_page.winfo_ismapped(), 'Home dashboard did not reappear'
+                    assert app.active_page is None, 'Other page still active on Home'
+                    assert app.home_page.winfo_children(), 'Home dashboard controls disappeared'
             assert app.status.get() == 'Demo running — no radio'
             root.destroy()
         sys.exit(0)
