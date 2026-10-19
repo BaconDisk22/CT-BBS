@@ -364,12 +364,16 @@ class SitdownApp:
                             "A running server process does not prove a radio link.")
 
     def show_about(self):
-        self.show_info("About The Sitdown BBS",
-                            "THE SITDOWN BBS — North Jersey Communications Division\n"
-                            "Jersey-themed Meshtastic bulletin board.\n"
-                            "Built for the mesh. Raised in Jersey.\n\n"\n                            "Original project: TC²-BBS by TheCommsChannel.\n"\n                            "https://github.com/TheCommsChannel/TC2-BBS-mesh\n\n"
-                            "Connection details shown here come from the running app, "
-                            "not from promotional demo artwork.")
+        self.show_info(
+            "About The Sitdown BBS",
+            "THE SITDOWN BBS — North Jersey Communications Division\n"
+            "Jersey-themed Meshtastic bulletin board.\n"
+            "Built for the mesh. Raised in Jersey.\n\n"
+            "Original project: TC²-BBS by TheCommsChannel.\n"
+            "https://github.com/TheCommsChannel/TC2-BBS-mesh\n\n"
+            "Connection details shown here come from the running app, "
+            "not from promotional demo artwork."
+        )
 
     def styled_button(self, parent, text, command, color=None, compact=False):
         # macOS Aqua ignores custom backgrounds on native Tk buttons,
