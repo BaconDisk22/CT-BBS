@@ -1,22 +1,15 @@
-# Jersey artwork
+# Connecticut artwork
 
-Production raster artwork generated with the built-in image-generation tool from
-the user's supplied Jersey desktop/icon reference on 2026-10-18. These assets are
-embedded in the actual app and packaged offline; they are not UI mockups.
+Both images are drawn in code by `scripts/draw_ct_artwork.py` (Pillow, macOS system
+fonts: Impact, Futura, American Typewriter). They are embedded in the app and
+packaged for offline use. They are not UI mockups.
 
-- `jersey-banner.png`: Nighttime North Jersey waterfront and illuminated bridge,
-  distressed green SIT / white DOWN / red brush BBS lettering, division subtitle,
-  and a tricolor New Jersey silhouette. No rendered controls or window chrome.
-- `jersey-icon.png`: Rounded dark tile, fine silver rim, nighttime waterfront,
-  large distressed tricolor New Jersey silhouette, stacked white THE SITDOWN and
-  vivid red brush BBS. Transparent outer corners.
+- `ct-banner.png` (2172x724): night shoreline on Long Island Sound with stars, a full
+  moon and its reflection, a Charter Oak silhouette and a red-and-white striped
+  lighthouse with a beam. Left panel: THE / gold PACKY / red BBS, "NUTMEG STATE •
+  COMMUNICATIONS DIVISION" and "Take a left where the old Ames used to be."
+- `ct-icon.png` (1254x1254): rounded navy Dock tile with a gold rim, the striped
+  lighthouse over the water, gold PACKY lettering and "BBS • CT". Transparent corners.
 
-Prompt set: create production artwork closely matching the screenshot's cinematic
-nighttime waterfront, distressed lettering and green/white/red Jersey identity.
-Banner prompt requested exact text “THE SITDOWN BBS” and “NORTH JERSEY •
-COMMUNICATIONS DIVISION”, edge-to-edge landscape artwork without controls.
-Icon prompt requested a single rounded-square Dock icon with the same imagery,
-exact title, silver rim and transparent exterior; no UI or extra captions.
-
-`scripts/make_icon.py` resizes this approved icon for the Mac packaging pipeline.
-It must not replace the artwork with the earlier simple skyline drawing.
+Regenerate with `python scripts/draw_ct_artwork.py`, then run `scripts/make_icon.py`,
+which resizes the icon for the Mac packaging pipeline and `docs/images/app-icon.png`.

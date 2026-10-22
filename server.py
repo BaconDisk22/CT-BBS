@@ -18,16 +18,16 @@ import queue
 import signal
 import threading
 from pathlib import Path
-from sitdown_control import start_reader, snapshot, handle, emit
-from sitdown_chat import chat_event
+from packy_control import start_reader, snapshot, handle, emit
+from packy_chat import chat_event
 
 from config_init import initialize_config, get_interface, init_cli_parser, merge_config
 from db_operations import initialize_database
 from js8call_integration import JS8CallClient
 from message_processing import on_receive
 from pubsub import pub
-from sitdown_utilities import LocalUtilities
-from sitdown_link import RadioLinkMonitor
+from packy_utilities import LocalUtilities
+from packy_link import RadioLinkMonitor
 
 # General logging
 logging.basicConfig(
@@ -46,9 +46,9 @@ js8call_handler.setFormatter(js8call_formatter)
 js8call_logger.addHandler(js8call_handler)
 
 def display_banner():
-    """Show Sitdown branding without altering upstream attribution."""
-    print("THE SITDOWN BBS")
-    print("North Jersey Communications Division")
+    """Show Packy branding without altering upstream attribution."""
+    print("THE PACKY BBS")
+    print("Nutmeg State Communications Division")
     print("Meshtastic bulletin board server")
 
 
@@ -65,10 +65,10 @@ def main():
     interface = get_interface(system_config)
     interface.bbs_nodes = system_config['bbs_nodes']
     interface.allowed_nodes = system_config['allowed_nodes']
-    interface.sitdown = LocalUtilities(interface, system_config['config'],
-        state_path=Path(config_file or 'config.ini').resolve().with_name('sitdown-broadcasts.db'))
+    interface.packy = LocalUtilities(interface, system_config['config'],
+        state_path=Path(config_file or 'config.ini').resolve().with_name('packy-broadcasts.db'))
 
-    logging.info(f"THE SITDOWN BBS is running on {system_config['interface_type']} interface...")
+    logging.info(f"THE PACKY BBS is running on {system_config['interface_type']} interface...")
 
     initialize_database()
 
@@ -91,8 +91,8 @@ def main():
     requests = start_reader() if args.desktop_control else None
     stopping = threading.Event()
     signal.signal(signal.SIGTERM, lambda *_: stopping.set())
-    interface.sitdown.mqtt.start()
-    interface.sitdown.startup()
+    interface.packy.mqtt.start()
+    interface.packy.startup()
     link = RadioLinkMonitor(interface)
 
     try:
@@ -101,21 +101,21 @@ def main():
             if link.check():
                 logging.error('Radio session disconnected for 30s; exiting for supervisor recovery')
                 return 1
-            interface.sitdown.tick()
+            interface.packy.tick()
             if requests is not None:
                 try:
-                    emit(handle(interface.sitdown, requests.get_nowait()))
+                    emit(handle(interface.packy, requests.get_nowait()))
                 except queue.Empty:
                     pass
                 if time.monotonic() - last_snapshot >= 5:
-                    emit(snapshot(interface.sitdown))
+                    emit(snapshot(interface.packy))
                     last_snapshot = time.monotonic()
 
     except KeyboardInterrupt:
         logging.info("Shutting down the server...")
     finally:
         pub.unsubscribe(receive_packet, system_config['mqtt_topic'])
-        interface.sitdown.mqtt.stop()
+        interface.packy.mqtt.stop()
         interface.close()
         if js8call_client.connected:
             js8call_client.close()

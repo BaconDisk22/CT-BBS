@@ -1,5 +1,5 @@
 import unittest
-from sitdown_send_preflight import send_preflight
+from packy_send_preflight import send_preflight
 
 
 class SendLimitTests(unittest.TestCase):

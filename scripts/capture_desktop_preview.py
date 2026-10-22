@@ -8,20 +8,20 @@ import tkinter as tk
 from PIL import ImageGrab
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from sitdown_desktop import SitdownApp
+from packy_desktop import PackyApp
 
 # Isolate saved auto-start/settings so screenshot jobs can never connect a radio.
-import sitdown_desktop
+import packy_desktop
 scratch = tempfile.TemporaryDirectory()
-sitdown_desktop.CONFIG = Path(scratch.name) / 'launcher.json'
+packy_desktop.CONFIG = Path(scratch.name) / 'launcher.json'
 root = tk.Tk()
-app = SitdownApp(root)
+app = PackyApp(root)
 app.demo.set(True)
 app.start()
 app.log("DEMONSTRATION DATA — no radio connected")
-app.log("The Social Club: example bulletin board")
-app.log("A Word With You: sample mail")
-app.log("The Backroom: example activity; no radio traffic transmitted")
+app.log("The Town Green: example bulletin board")
+app.log("Note on the Windshield: sample mail")
+app.log("Town Hall: example activity; no radio traffic transmitted")
 root.update_idletasks()
 root.lift()
 root.focus_force()

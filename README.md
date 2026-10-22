@@ -1,181 +1,147 @@
 <div align="center">
 
+<img src="assets/ct-banner.png" alt="The Packy BBS banner: shoreline lighthouse at night" width="900">
 
-## Jersey desktop and operator desks
+# 🍕 THE PACKY BBS
+### ⚓ Nutmeg State Communications Division ⚓
 
-The dashboard uses the reference-style nighttime waterfront banner, distressed
-Jersey lettering, matching Dock icon, dark teal panels, red controls, and green
-console text. The artwork is bundled locally for offline use.
+**“Come on in. Take a left where the old Ames used to be.”**
 
-The dashboard now has working tab pages for BBS utilities, local mail and boards,
-radio status, full node lookup, settings, and About. Admin announcements and an
-optional startup broadcast use the existing radio connection. Weather works with
-an offline local report; internet weather and MQTT are separately **off by default**.
+🌊 **Long Island Sound Navy** · 🟡 **Nutmeg Gold** · 🍅 **Apizza Red** · 🦪 **White Clam White**
 
-Read the [configuration and command guide](docs/JERSEY_DESK.md) and
-[upstream audit](docs/UPSTREAM_AUDIT.md). This is a staged change: local utilities,
-opt-in services, then desktop integration. Mac builds are test artifacts until
-validated with a physical radio on an Intel Mac.
-
-<img src="docs/images/app-icon.png" alt="Reference-style Jersey app icon" width="180">
-
-
-# 🤌 THE SITDOWN BBS
-### 🇮🇹 North Jersey Communications Division 🇮🇹
-
-**“Ayyy, pull up a chair. We gotta talk.”**
-
-🖤 **Jersey Black** · ❤️ **Italian Red** · 💚 **Italian Green** · 🟡 **Diner Gold**
-
-*A neighborhood social club for Meshtastic radio communications. Everybody's got connections.*
+*A Meshtastic bulletin board for the whole state: the Valley, the Shoreline, the Quiet Corner and, fine, even Fairfield County.*
 
 </div>
 
 ---
 
-## 🥩 Welcome to the family
+## 🏛️ Welcome to the Nutmeg State
 
-Around here, we don't just send messages. **We have sitdowns.**
+Around here we don't just send messages. **We stop by the packy.**
 
-**The Sitdown BBS** is a New Jersey–themed Meshtastic bulletin board server based on the open-source TC²-BBS project. Send direct messages over Meshtastic to access community bulletins, mail, channel information, and utilities—no internet required for the radio link.
+**The Packy BBS** is a Connecticut-themed Meshtastic bulletin board server based on the open-source TC²-BBS project (by way of The Sitdown BBS). Send direct messages over Meshtastic to read the town bulletins, check your mail, browse channels and run utilities. The radio link needs no internet.
 
-Think old-school bulletin boards with a North Jersey attitude: diner coffee, Sunday gravy, and the eternal **pork roll vs. Taylor ham** debate. Whatever exit you're from, there's a seat at the table.
+Think old-school bulletin boards with a Connecticut attitude: apizza arguments, grinders, the Merritt, Brass Bonanza, and directions based on stores that closed in 1999. Whichever town you're from (and it's better than the next town over), there's a stool at the counter.
 
-> **Important:** This is an independent community project with a fictional Italian-American social-club theme. It is not affiliated with any television show.
+> **Important:** This is an independent community project and a loving homage to Connecticut. It is not affiliated with, or endorsed by, any business, team, utility or town mentioned in its jokes.
 
-## 📻 What's in the family business?
+## 📻 What's on the menu?
 
-| Jersey name | What it does |
+| Connecticut name | What it does |
 | --- | --- |
-| 🥩 **The Social Club** | Bulletin boards and community posts |
-| ✉️ **A Word With You** | BBS mail |
-| 🗺️ **What Exit?** | Channel directory |
-| 📊 **Who's Connected?** | Server utilities and statistics |
-| 🔮 **Jersey Wisdom** | Random fortunes |
-| 🖥️ **The Sitdown Desktop** | Tabbed desktop with server status, searchable logs, operator desks, and full node lookup |
-| 🧪 **Demo Mode** | Explore desktop controls without connecting or transmitting over radio |
-| 📦 **The Books** | Create a ZIP backup of available local settings and database files |
+| 🌳 **The Town Green** | Bulletin boards and community posts |
+| ✉️ **Note on the Windshield** | BBS mail |
+| 🗺️ **Where the Old Ames Was** | Channel directory |
+| ⚡ **Is Eversource Up?** | Server utilities and statistics |
+| 🔮 **Nutmeg Wisdom** | 100 random Connecticut fortunes |
+| 🌦️ **Wait-Five-Minutes Weather Desk** | Offline report or opt-in internet weather |
+| 🏛️ **The First Selectman Has Spoken** | Admin-only announcements |
+| 🖥️ **The Packy Desktop** | Tabbed desktop with server status, searchable logs, operator desks and full node lookup |
+| 🧪 **Demo Mode** | Explore the desktop without connecting or transmitting over radio |
+| 🔋 **The Generator** | ZIP backup of local settings and databases (you already know what's coming) |
 
-**Hardware verification (October 2026):** The Intel Mac desktop BBS launched and received a real Meshtastic message over TCP. The sending device confirmed receiving the BBS menu reply. The latest compact layout and radio activity indicator still require follow-up testing on the Mac. The activity indicator reflects incoming messages seen in server logs, not continuous link health.
+**Development note:** This repository starts from The Sitdown BBS as of its v0.1.0-rc.6 feature set. Desktop features, MQTT monitoring and Intel Mac packaging carry over unchanged; only names, copy, art and defaults are Connecticut. Radio and broker behavior still needs fresh testing with real hardware.
 
-**Development note:** The desktop dashboard includes live server logs, process monitoring, USB port discovery, optional process restart, and a radio-free demo mode. Intel Mac build and release workflows are configured; check [Releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases) for a successfully published build. Real radio connection verification, restore, and automated screenshot publication still require further validation.
-
-## 🕵️ The Backroom — dashboard tools
-
-The desktop launcher includes a few handy tools for keeping tabs on the family business:
+## 🏛️ Town Hall: dashboard tools
 
 | Control | What it does |
 | --- | --- |
-| **Find in Log / Find Next** | Search the visible server activity log and jump to matching entries |
-| **Save Log** | Export the visible activity log as a UTF-8 text file for troubleshooting |
-| **Clear Log** | Clear the visible log without stopping the BBS process |
-| **Nodes / Who's Who** | Search the entire radio node database by ID or name, with available telemetry |
-| **Refresh USB Ports** | List detected serial devices and fill in the port when exactly one is available |
-| **Restart on crash** | Optionally restart the server process after an unexpected exit with capped exponential backoff |
-| **Radio activity** | Reports incoming Meshtastic messages observed in BBS logs without claiming a permanent connection |
+| **Find in Log / Find Next** | Search the visible server activity log |
+| **Save Log** | Export the visible log as UTF-8 text |
+| **Clear Log** | Clear the visible log without stopping the BBS |
+| **Nodes / Who's Who** | Search the whole radio node database by ID or name |
+| **Refresh USB Ports** | List serial devices; fills in the port when exactly one is found |
+| **Restart on crash** | Optionally restart the server after an unexpected exit, with capped backoff |
+| **Radio activity** | Reports incoming messages seen in BBS logs, without claiming a permanent link |
 
-**Validation scope:** The earlier version's two-way TCP radio test is historical evidence only. These staged changes and their packaged app require a fresh Intel Mac/radio test. Node snapshots are not continuous presence checks; backups do not yet support restore.
+### Nutmeg Mouth Control
 
-### Jersey Mouth Control
+The Home page offers **Clean**, **Valley** and **Route 8** greeting styles. Settings configures the startup broadcast greeting, with a separate opt-in for public profanity. Custom announcements, mail and technical notices are always sent verbatim.
 
-Home provides **Clean Jersey**, **Jersey Attitude**, and **Full Jersey Mouth** greeting previews. Settings configures the generated startup broadcast greeting, with a separate public-profanity opt-in. Custom announcements, mail, and technical notices remain verbatim.
-
-## 🤌 The Playbook — radio commands
+## 🥪 The Grinder Menu: radio commands
 
 Send these as **direct messages to the Meshtastic BBS node**.
 
 | Command | Meaning |
 | --- | --- |
-| `/sitdown` or `/menu` | Back to the main menu |
-| `/help` or `/ayyy` | Quick help |
+| `/packy` or `/menu` | Back to the main menu |
+| `/help`, `/apizza` or `/grinder` | Quick help |
 | `/mail` or `/inbox` | Check your mail |
-| `/boards` or `/socialclub` | Open the bulletin board |
-| `/fortune` | Get a random fortune |
+| `/boards` or `/towngreen` | The Town Green bulletin boards |
+| `/fortune` or `/nutmeg` | Nutmeg Wisdom |
 | `/tools` | Utilities |
 | `/cancel` | Return to the main menu |
 | `/node <ID or name>` | Full radio node lookup |
-| `/weather` | Offline report or opt-in internet weather |
+| `/weather` | Wait-Five-Minutes Weather Desk |
 | `/wire` | Optional MQTT topic counts |
 | `/announce <channel> <text>` | Administrator-only broadcast |
 
-The original TC²-BBS one-letter menus and quick commands remain available alongside the Jersey shortcuts. More details: [SITDOWN_COMMANDS.md](SITDOWN_COMMANDS.md).
+The original TC²-BBS one-letter menus and quick commands still work alongside the Connecticut shortcuts. More details: [PACKY_COMMANDS.md](PACKY_COMMANDS.md).
 
-## 🖥️ Desktop preview (demonstration data)
+## 📡 MQTT networks: CTMesh and ValleyMesh
 
-**THE SITDOWN BBS — North Jersey Communications Division**
+The desktop can watch two MQTT networks, receive-only by default. They are called **CTMesh** and **ValleyMesh** in this build. **Both names are placeholders:** there is no known Connecticut Meshtastic broker yet. Both default to the public `mqtt.meshtastic.org` broker and stay disabled until you turn them on in Settings. Swap in real Connecticut networks when they exist.
 
-The current desktop dashboard uses Italian red and green accents, dark charcoal panels, and readable high-contrast controls. It includes **Start the Sitdown**, **Fuggedaboutit**, **The Playbook**, **The Family Business**, **The Books**, live searchable server logs, log export/clear controls, full node lookup, and a demo mode that does not require a connected radio.
+## 🖥️ Desktop
 
-**Demonstration data — no live radio connection.** The image below is captured automatically from the actual Tkinter dashboard on an Intel macOS GitHub Actions runner. It uses sample log entries, not real radio traffic. These screenshots come from the staged PR’s Intel Mac demo capture.
+<img src="docs/images/app-icon.png" alt="The Packy BBS Dock icon: striped lighthouse with PACKY lettering" width="180">
 
-![The Sitdown BBS desktop dashboard in demo mode — demonstration data, no radio connection](docs/images/desktop-preview-demo.png)
+The dashboard uses navy and gold panels, apizza-red buttons, and a night shoreline banner with a lighthouse and the Charter Oak. Controls include **Open the Packy**, **Closed for the Blizzard**, **The Grinder Menu**, **The Board of Selectmen**, **The Generator** and **Ask a Valley Guy**. All artwork is drawn by [scripts/draw_ct_artwork.py](scripts/draw_ct_artwork.py) and bundled for offline use.
 
-<details>
-<summary>Operator desks, full node lookup, and opt-in settings (demo screenshots)</summary>
+Demo screenshots in `docs/images/*-preview-demo.png` come from the **README desktop screenshot** workflow. Re-run it after a UI change so they show the current look.
 
-![Announcement desk — demonstration only](docs/images/bbs-preview-demo.png)
-![Full node lookup — demonstration node](docs/images/nodes-preview-demo.png)
-![Startup broadcast settings — disabled by default](docs/images/settings-preview-demo.png)
-
-</details>
-
-[Desktop screenshot automation](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/readme-desktop-screenshot.yml) · [Intel Mac releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases)
+[Desktop screenshot automation](https://github.com/BaconDisk22/CT-BBS/actions/workflows/readme-desktop-screenshot.yml) · [Intel Mac releases](https://github.com/BaconDisk22/CT-BBS/releases)
 
 ### 📦 Download the latest Intel Mac build
 
-[![Intel Mac test build](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/intel-mac-test-build.yml/badge.svg)](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/intel-mac-test-build.yml)
+[![Intel Mac test build](https://github.com/BaconDisk22/CT-BBS/actions/workflows/intel-mac-test-build.yml/badge.svg)](https://github.com/BaconDisk22/CT-BBS/actions/workflows/intel-mac-test-build.yml)
 
-**[View GitHub Releases](https://github.com/BaconDisk22/The-Sitdown-BBS/releases)** · **[Download test builds from GitHub Actions](https://github.com/BaconDisk22/The-Sitdown-BBS/actions/workflows/intel-mac-test-build.yml)**
+- **GitHub Releases:** look for the latest `CT-BBS-Intel-Mac-*.dmg` attached to a successful release.
+- **GitHub Actions:** open a successful **Intel Mac test build** run and download the **CT-BBS-Intel-Mac-Test** artifact. Artifacts expire after 14 days.
+- **Intel Mac:** builds target x86-64 macOS and are **unsigned and unnotarized**. Approve trusted builds in macOS Privacy & Security if prompted.
+- **Live radio:** configure your Meshtastic device before starting the real BBS server. A running process alone does not confirm a connected radio.
 
-- **GitHub Releases:** Look for the latest `The-Sitdown-BBS-Intel-Mac-*.dmg` attached to a successful release.
-- **GitHub Actions:** Open a successful **Intel Mac test build** run and download the **The-Sitdown-BBS-Intel-Mac-Test** artifact. Artifacts expire after 14 days.
-- **Intel Mac:** The workflow targets x86-64 macOS. Builds are currently **unsigned and unnotarized**; approve trusted builds through macOS Privacy & Security if prompted.
-- **Demo mode:** Launch the app and enable **Demo mode (no radio)** to explore the dashboard without transmitting.
-- **Live radio:** Configure your Meshtastic device before starting the real BBS server. A running process alone does not confirm a connected radio.
-
-For packaging details see [INTEL_MAC_TEST_BUILDS.md](INTEL_MAC_TEST_BUILDS.md), and for release instructions see [RELEASE_PROCESS.md](RELEASE_PROCESS.md).
+For packaging details see [INTEL_MAC_TEST_BUILDS.md](INTEL_MAC_TEST_BUILDS.md), and for releases see [RELEASE_PROCESS.md](RELEASE_PROCESS.md).
 
 ### 🛠️ Run from source
 
 Requires **Python 3 with Tkinter** and the dependencies in `requirements.txt`.
 
 ```bash
-git clone https://github.com/BaconDisk22/The-Sitdown-BBS.git
-cd The-Sitdown-BBS
+git clone https://github.com/BaconDisk22/CT-BBS.git
+cd CT-BBS
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp example_config.ini config.ini
 # Review config.ini before connecting a radio.
-python3 sitdown_desktop.py
+python3 packy_desktop.py
 ```
 
-Select **Demo mode** to explore without a radio. For the headless server run `python3 server.py`.
+Turn on **Demo mode** to explore without a radio. For the headless server, run `python3 server.py`. The default weather location is Meriden, near the middle of the state.
 
-## 🎨 Jersey colors, not Joker colors
+## 🎨 Nutmeg colors
 
 | Role | Color |
 | --- | --- |
-| Background | `#121212` Jersey Black |
-| Panels | `#242424` Charcoal |
-| Primary actions | `#C62828` Italian Red |
-| Connected / start | `#008C45` Italian Green |
-| Text | `#F5F5F0` Mozzarella White |
-| Highlights | `#F4B942` Diner Gold |
-
-No purple, no Joker branding. Just Jersey.
+| Background | `#06101F` Long Island Sound Navy |
+| Panels | `#0B1A30` Merritt Midnight |
+| Primary actions | `#B3261E` Apizza Char Red |
+| Connected / start | `#2FBF71` Town Green |
+| Text | `#F4F1EA` White Clam White |
+| Highlights | `#E8B931` Nutmeg Gold |
 
 ## 🧪 Development and testing
 
 ```bash
-python3 -m unittest discover -s tests -p 'test_sitdown_commands.py'
+python3 -m unittest discover -s tests
 ```
 
-GitHub Actions also checks syntax and the command alias tests. Hardware validation is still required before calling a radio release production-ready.
+GitHub Actions runs syntax checks and the full unit test suite, and the Intel Mac workflow runs the real-window desktop tests. You still need to test with real hardware before calling a radio release production-ready.
 
 ## 🙏 Respect to the original crew
 
-**Upstream credit:** The Sitdown BBS is based on **TC²-BBS Meshtastic** by **TheCommsChannel (TC²)**. The original project provided the BBS architecture and Meshtastic integration; this fork adds its own Jersey theme, shortcuts, and desktop preview.
+**Upstream credit:** The Packy BBS is based on **TC²-BBS Meshtastic** by **TheCommsChannel (TC²)**, through the New Jersey-themed **The Sitdown BBS**. The original project provided the BBS architecture and Meshtastic integration; this fork adds its own Connecticut theme, shortcuts, fortunes and artwork.
 
 - [Original TC²-BBS-mesh project](https://github.com/TheCommsChannel/TC2-BBS-mesh)
 - [Meshtastic](https://meshtastic.org/)
@@ -188,10 +154,10 @@ GitHub Actions also checks syntax and the command alias tests. Hardware validati
 
 <div align="center">
 
-### 🤌 “Fuggedaboutit. You're family now.”
+### 🍕 “Wait five minutes. You're from here now.”
 
-**THE SITDOWN BBS** · *North Jersey Communications Division*
+**THE PACKY BBS** · *Nutmeg State Communications Division*
 
-*Built for the mesh. Raised in Jersey.*
+*Built for the mesh. Raised on apizza.*
 
 </div>

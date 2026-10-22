@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from sitdown_radio_preflight import check_radio
+from packy_radio_preflight import check_radio
 
 
 class RadioPreflightIsolationTests(unittest.TestCase):

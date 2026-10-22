@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: sitdown-intel-${{ github.workflow }}-${{ github.ref }}
+  group: packy-intel-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -38,58 +38,58 @@ jobs:
         run: |
           python -m compileall -q -x '/\.git/' .
           python -m unittest discover -s tests
-          python -m unittest test_sitdown_personality
+          python -m unittest test_packy_personality
       - name: Check desktop layout and keyboard navigation
-        run: SITDOWN_UI_TESTS=1 python -m unittest discover -s tests -p 'test_sitdown_desktop.py'
+        run: PACKY_UI_TESTS=1 python -m unittest discover -s tests -p 'test_packy_desktop.py'
       - name: Capture desktop demo preview
         run: python scripts/capture_desktop_preview.py
       - name: Upload desktop demo preview
         uses: actions/upload-artifact@v4
         with:
-          name: sitdown-pr-desktop-preview
+          name: packy-pr-desktop-preview
           path: docs/images/*preview-demo.png
           if-no-files-found: error
-      - name: Generate Jersey app icon
+      - name: Generate Packy app icon
         run: |
           python scripts/make_icon.py
           mkdir -p build/icon.iconset
           for size in 16 32 128 256 512; do
-            sips -z "$size" "$size" build/sitdown-icon.png --out "build/icon.iconset/icon_${size}x${size}.png" >/dev/null
+            sips -z "$size" "$size" build/packy-icon.png --out "build/icon.iconset/icon_${size}x${size}.png" >/dev/null
             double=$((size * 2))
-            sips -z "$double" "$double" build/sitdown-icon.png --out "build/icon.iconset/icon_${size}x${size}@2x.png" >/dev/null
+            sips -z "$double" "$double" build/packy-icon.png --out "build/icon.iconset/icon_${size}x${size}@2x.png" >/dev/null
           done
-          iconutil -c icns build/icon.iconset -o build/sitdown.icns
+          iconutil -c icns build/icon.iconset -o build/packy.icns
       - name: Package Intel Mac application
         run: |
           python -m PyInstaller --noconfirm --clean --windowed --onedir \
-            --name "The Sitdown BBS" \
-            --icon build/sitdown.icns \
+            --name "The Packy BBS" \
+            --icon build/packy.icns \
             --add-data "example_config.ini:." --add-data "assets:assets" \
             --hidden-import paho.mqtt.client --collect-all meshtastic \
             --collect-all pubsub \
-            sitdown_desktop.py
-          test -d "dist/The Sitdown BBS.app"
-          test "$(lipo -archs 'dist/The Sitdown BBS.app/Contents/MacOS/The Sitdown BBS')" = "x86_64"
+            packy_desktop.py
+          test -d "dist/The Packy BBS.app"
+          test "$(lipo -archs 'dist/The Packy BBS.app/Contents/MacOS/The Packy BBS')" = "x86_64"
       - name: Smoke test the packaged Intel app without radio
         run: |
           python - <<'PYTHON'
           import subprocess
-          subprocess.run(['dist/The Sitdown BBS.app/Contents/MacOS/The Sitdown BBS',
-                          '--sitdown-smoke-test'], check=True, timeout=45)
+          subprocess.run(['dist/The Packy BBS.app/Contents/MacOS/The Packy BBS',
+                          '--packy-smoke-test'], check=True, timeout=45)
           PYTHON
       - name: Create unsigned test DMG
         run: |
           mkdir -p dmg-staging
-          cp -R "dist/The Sitdown BBS.app" dmg-staging/
+          cp -R "dist/The Packy BBS.app" dmg-staging/
           ln -s /Applications dmg-staging/Applications
-          bash scripts/create_dmg.sh "The-Sitdown-BBS-Intel-Test.dmg" "The Sitdown BBS TEST"
-          shasum -a 256 "The-Sitdown-BBS-Intel-Test.dmg" > SHA256SUMS.txt
+          bash scripts/create_dmg.sh "CT-BBS-Intel-Test.dmg" "The Packy BBS TEST"
+          shasum -a 256 "CT-BBS-Intel-Test.dmg" > SHA256SUMS.txt
       - name: Upload downloadable test build
         uses: actions/upload-artifact@v4
         with:
-          name: The-Sitdown-BBS-Intel-Mac-Test
+          name: CT-BBS-Intel-Mac-Test
           path: |
-            The-Sitdown-BBS-Intel-Test.dmg
+            CT-BBS-Intel-Test.dmg
             SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 14

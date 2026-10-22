@@ -1,12 +1,12 @@
 """Offline send safety boundary tests: no SDK or MQTT calls."""
 import unittest
-from sitdown_send_preflight import send_preflight
+from packy_send_preflight import send_preflight
 
 
 class SendPreflightBoundaryTests(unittest.TestCase):
     def test_all_permission_gates_must_pass(self):
         base = dict(enabled=True, confirmed=True, radio_ready=True,
-                    demo_mode=False, message="Hello CentralNJ")
+                    demo_mode=False, message="Hello CTMesh")
         for key in ("enabled", "confirmed", "radio_ready"):
             with self.subTest(gate=key):
                 attempt = dict(base)

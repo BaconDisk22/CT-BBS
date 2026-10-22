@@ -1,5 +1,5 @@
 import unittest
-from sitdown_release_readiness import REQUIRED, evaluate_release
+from packy_release_readiness import REQUIRED, evaluate_release
 
 
 class ReleaseReadinessTests(unittest.TestCase):

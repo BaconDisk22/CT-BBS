@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, timezone
-from sitdown_connection_status import Observation, describe_status
+from packy_connection_status import Observation, describe_status
 
 
 class StatusTests(unittest.TestCase):

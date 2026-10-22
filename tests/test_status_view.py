@@ -1,5 +1,5 @@
 import unittest
-from sitdown_status_view import format_operator_status
+from packy_status_view import format_operator_status
 
 
 class StatusViewTests(unittest.TestCase):

@@ -13,7 +13,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: sitdown-readme-screenshot
+  group: packy-readme-screenshot
   cancel-in-progress: false
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
       - name: Upload screenshot artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sitdown-desktop-demo-screenshot
+          name: packy-desktop-demo-screenshot
           path: docs/images/desktop-preview-demo.png
           if-no-files-found: error
       - name: Open screenshot pull request
@@ -48,7 +48,7 @@ jobs:
           SCREENSHOT_PATHS: |
             docs/images/desktop-preview-demo.png
           CHECK_WORKFLOWS: |
-            sitdown-checks.yml
+            packy-checks.yml
             intel-mac-test-build.yml
         run: bash .github/scripts/open-screenshot-pr.sh
 
