@@ -1,6 +1,6 @@
 """Read-only operator status must not imply end-to-end delivery."""
 import unittest
-from sitdown_status_view import format_operator_status
+from packy_status_view import format_operator_status
 
 
 class OperatorStatusInvariantTests(unittest.TestCase):

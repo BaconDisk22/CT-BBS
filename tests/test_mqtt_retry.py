@@ -1,5 +1,5 @@
 import unittest
-from sitdown_mqtt_retry import retry_delay, should_retry
+from packy_mqtt_retry import retry_delay, should_retry
 
 
 class RetryTests(unittest.TestCase):

@@ -1,6 +1,6 @@
 import configparser
 import unittest
-from sitdown_online import ActivityCounter
+from packy_online import ActivityCounter
 
 
 class RecoveryTelemetryTests(unittest.TestCase):

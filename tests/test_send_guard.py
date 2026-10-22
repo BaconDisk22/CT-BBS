@@ -1,5 +1,5 @@
 import unittest
-from sitdown_send_guard import SendPermission, can_send
+from packy_send_guard import SendPermission, can_send
 
 
 class SendGuardTests(unittest.TestCase):

@@ -1,4 +1,4 @@
-# The Boss Has Spoken
+# The First Selectman Has Spoken
 
 Remote `/announce <channel> <text>`, `/schedule <ISO-time> <channel> <text>`,
 `/announcements`, and `/cancelannouncement <id>` require an exact configured
@@ -22,7 +22,7 @@ Blank startup text uses the existing clean-by-default public personality.
 Custom operator text is sent verbatim. A failed/uncertain send still consumes
 its cooldown. Clock rollback suppresses attempts until time catches up.
 
-State lives in `sitdown-broadcasts.db` beside the server config. Keep this file
+State lives in `packy-broadcasts.db` beside the server config. Keep this file
 across restarts; deleting it resets anti-spam history. State storage failures
 fail closed. Successful submission does not confirm over-the-air delivery.
 Original TC²-BBS credit and GPL license remain unchanged.

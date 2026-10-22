@@ -1,0 +1,21 @@
+{
+  "name": "The Packy BBS",
+  "subtitle": "Nutmeg State Communications Division",
+  "tagline": "Come on in. Take a left where the old Ames used to be.",
+  "colors": {
+    "background": "#06101F",
+    "panel": "#0B1A30",
+    "primary": "#B3261E",
+    "connected": "#2FBF71",
+    "text": "#F4F1EA",
+    "highlight": "#E8B931"
+  },
+  "labels": {
+    "start": "Open the Packy",
+    "stop": "Closed for the Blizzard",
+    "commands": "The Grinder Menu",
+    "settings": "The Board of Selectmen",
+    "backup": "The Generator",
+    "connection_help": "Ask a Valley Guy"
+  }
+}

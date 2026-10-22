@@ -1,17 +1,17 @@
 # Dual MQTT network foundation
 
-The `sitdown_dual_mqtt.DualMQTTMonitors` backend supports **independent**
-CentralNJ and SJMesh receive-only MQTT counters. Both are disabled by default.
+The `packy_dual_mqtt.DualMQTTMonitors` backend supports **independent**
+CTMesh and ValleyMesh receive-only MQTT counters. Both are disabled by default.
 The existing single `[mqtt_monitor]` integration is unchanged; the new manager
 is not yet wired to the desktop Settings or startup lifecycle.
 
-Use `[mqtt_centralnj]` and `[mqtt_sjmesh]` with explicit `enabled=true`,
+Use `[mqtt_ctmesh]` and `[mqtt_valleymesh]` with explicit `enabled=true`,
 a narrow `topic`, and broker credentials supplied locally. Defaults for the
-hostnames are `mqtt.meshtastic.org` and `mqtt.sjmesh.net` respectively.
+hostnames are `mqtt.meshtastic.org` and `mqtt.meshtastic.org` respectively.
 No username, password, PSK, or broad wildcard topic is supplied by the app.
 TLS defaults on; port defaults to 8883. The manager refuses wildcard topics before
 connecting, with one exception: a single trailing `+` in the gateway position of a
-named encrypted channel, such as `msh/US/2/e/CentralNJ/+`, which subscribes to that
+named encrypted channel, such as `msh/US/2/e/CTMesh/+`, which subscribes to that
 one channel from every gateway. `#`, any other `+`, and region-wide topics stay refused.
 
 Next PR: independent Settings toggles, per-network auto-connect preferences,

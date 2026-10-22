@@ -1,6 +1,6 @@
 # Upstream audit — 2026-10-18
 
-Baseline: BaconDisk22/The-Sitdown-BBS `e71eefe`. Read upstream main and closed
+Baseline: BaconDisk22/CT-BBS `e71eefe`. Read upstream main and closed
 TheCommsChannel/TC2-BBS-mesh PRs [160](https://github.com/TheCommsChannel/TC2-BBS-mesh/pull/160)
 and [162](https://github.com/TheCommsChannel/TC2-BBS-mesh/pull/162) before implementation.
 

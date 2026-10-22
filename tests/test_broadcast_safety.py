@@ -1,13 +1,13 @@
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import Mock
-from sitdown_utilities import LocalUtilities
-import test_sitdown_utilities
+from packy_utilities import LocalUtilities
+import test_packy_utilities
 
 
 class BroadcastSafety(unittest.TestCase):
     def setUp(self):
-        test_sitdown_utilities.UtilityTests.setUp(self)
+        test_packy_utilities.UtilityTests.setUp(self)
         self.config['announcements'] = {'admin_nodes': '!abcdef01'}
         self.now = 1800000000
         self.service.broadcasts.clock = lambda: self.now

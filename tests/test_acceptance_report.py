@@ -1,5 +1,5 @@
 import unittest
-from sitdown_acceptance_report import acceptance_record
+from packy_acceptance_report import acceptance_record
 
 
 class AcceptanceReportTests(unittest.TestCase):

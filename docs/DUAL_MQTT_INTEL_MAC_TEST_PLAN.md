@@ -1,4 +1,4 @@
-# CentralNJ and SJMesh: Intel Mac verification checklist
+# CTMesh and ValleyMesh: Intel Mac verification checklist
 
 These desktop MQTT sessions are **receive-only activity monitors**, not a two-way Meshtastic transport. No broker publish, radio transmission, or cross-network bridge is implemented here.
 
@@ -10,19 +10,19 @@ These desktop MQTT sessions are **receive-only activity monitors**, not a two-wa
 - Do not enable auto-connect until manual connectivity is verified.
 
 ## Manual connection
-1. Enable CentralNJ only, save, restart the app, and click **Connect CentralNJ**.
-2. Verify the CentralNJ status; SJMesh must remain disconnected.
-3. With authorized test traffic on the selected topic, check CentralNJ MQTT RX increments. Radio RX/TX counts must not change as a consequence.
-4. Disconnect CentralNJ and verify that it stops.
-5. Repeat for SJMesh only.
+1. Enable CTMesh only, save, restart the app, and click **Connect CTMesh**.
+2. Verify the CTMesh status; ValleyMesh must remain disconnected.
+3. With authorized test traffic on the selected topic, check CTMesh MQTT RX increments. Radio RX/TX counts must not change as a consequence.
+4. Disconnect CTMesh and verify that it stops.
+5. Repeat for ValleyMesh only.
 6. Enable both and connect both; verify their counters and statuses remain independent.
 7. Disconnect one; the other must stay connected.
 8. Disconnect broker networking temporarily. Verify status and reconnect behavior, without freezes or crashes.
 9. Quit the app; both MQTT client loops should stop.
 
 ## Auto-connect and safety
-- Set enabled=true and auto_connect=true for CentralNJ only. Restart and confirm SJMesh stays offline.
-- Repeat for SJMesh only, then both.
+- Set enabled=true and auto_connect=true for CTMesh only. Restart and confirm ValleyMesh stays offline.
+- Repeat for ValleyMesh only, then both.
 - Confirm enabled=false or auto_connect=false prevents automatic startup for that profile.
 - Run Demo mode: no broker connection should be opened.
 - Try an empty topic, a `#` topic, or a `+` anywhere but the gateway position: connection must be refused.

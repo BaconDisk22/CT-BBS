@@ -2,7 +2,7 @@ import configparser
 import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock
-from sitdown_online import ActivityCounter
+from packy_online import ActivityCounter
 
 
 class MqttSafetyTests(unittest.TestCase):

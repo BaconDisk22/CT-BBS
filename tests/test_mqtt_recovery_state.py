@@ -1,5 +1,5 @@
 import unittest
-from sitdown_mqtt_recovery_state import RecoveryState
+from packy_mqtt_recovery_state import RecoveryState
 
 
 class RecoveryStateTests(unittest.TestCase):

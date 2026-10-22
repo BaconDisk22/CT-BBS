@@ -2,8 +2,8 @@ import io
 import json
 import unittest
 from unittest.mock import Mock
-from sitdown_monitor import ServerSupervisor
-from sitdown_link import PREFIX
+from packy_monitor import ServerSupervisor
+from packy_link import PREFIX
 
 
 class LinkEventTests(unittest.TestCase):
