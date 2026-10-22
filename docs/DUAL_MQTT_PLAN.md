@@ -1,13 +1,13 @@
 # Dual MQTT network foundation
 
 The `packy_dual_mqtt.DualMQTTMonitors` backend supports **independent**
-CTMesh and ValleyMesh receive-only MQTT counters. Both are disabled by default.
+receive-only MQTT counters; CTMesh is the only network shipped. It is disabled by default.
 The existing single `[mqtt_monitor]` integration is unchanged; the new manager
 is not yet wired to the desktop Settings or startup lifecycle.
 
-Use `[mqtt_ctmesh]` and `[mqtt_valleymesh]` with explicit `enabled=true`,
-a narrow `topic`, and broker credentials supplied locally. Defaults for the
-hostnames are `mqtt.meshtastic.org` and `mqtt.meshtastic.org` respectively.
+Use `[mqtt_ctmesh]` with explicit `enabled=true`,
+a narrow `topic`, and broker credentials supplied locally. The default
+hostname is `mqtt.meshtastic.org`.
 No username, password, PSK, or broad wildcard topic is supplied by the app.
 TLS defaults on; port defaults to 8883. The manager refuses wildcard topics before
 connecting, with one exception: a single trailing `+` in the gateway position of a

@@ -1,14 +1,18 @@
 """No-network tests for per-network MQTT packet deduplication."""
 import unittest
 from packy_mqtt_dedupe import PacketDeduplicator
+from second_network import add_test_network
 
 
 class PacketDedupeTests(unittest.TestCase):
+    def setUp(self):
+        add_test_network(self)
+
     def test_duplicate_and_network_isolation(self):
         cache = PacketDeduplicator()
         self.assertFalse(cache.duplicate('ctmesh', 'test', 123, 7))
         self.assertTrue(cache.duplicate('ctmesh', 'test', 123, 7))
-        self.assertFalse(cache.duplicate('valleymesh', 'test', 123, 7))
+        self.assertFalse(cache.duplicate('testnet', 'test', 123, 7))
         self.assertFalse(cache.duplicate('ctmesh', 'other', 123, 7))
 
     def test_expiry_and_bounded_size(self):

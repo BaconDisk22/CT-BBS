@@ -2,9 +2,13 @@
 import configparser
 import unittest
 from packy_dual_mqtt import DualMQTTMonitors, topic_allowed
+from second_network import add_test_network
 
 
 class TopicPolicyTests(unittest.TestCase):
+    def setUp(self):
+        add_test_network(self)
+
     def test_exact_topics_are_allowed(self):
         for topic in ('msh/US/2/e/CTMesh/!abcd1234', 'msh/US/2/e/LongFast', 'custom/feed'):
             with self.subTest(topic=topic):
@@ -27,7 +31,7 @@ class TopicPolicyTests(unittest.TestCase):
     def test_manager_uses_the_same_rule(self):
         config = configparser.ConfigParser()
         config['mqtt_ctmesh'] = {'enabled': 'true', 'topic': 'msh/US/2/e/CTMesh/+'}
-        config['mqtt_valleymesh'] = {'enabled': 'true', 'topic': 'msh/US/2/e/+'}
+        config['mqtt_testnet'] = {'enabled': 'true', 'topic': 'msh/US/2/e/+'}
         subscribed = []
         class Client:
             def username_pw_set(self, *a): pass
@@ -45,8 +49,8 @@ class TopicPolicyTests(unittest.TestCase):
         self.assertTrue(manager.connect('ctmesh', factory=lambda: client))
         manager.monitors['ctmesh']._connect(client, None, None, 0, None)
         self.assertEqual(subscribed, ['msh/US/2/e/CTMesh/+'])
-        self.assertFalse(manager.connect('valleymesh', factory=lambda: self.fail('unsafe connection')))
-        self.assertIn('narrow topic', manager.snapshot()['valleymesh']['status'])
+        self.assertFalse(manager.connect('testnet', factory=lambda: self.fail('unsafe connection')))
+        self.assertIn('narrow topic', manager.snapshot()['testnet']['status'])
         manager.stop()
 
 

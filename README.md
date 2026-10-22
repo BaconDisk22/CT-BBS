@@ -78,9 +78,9 @@ Send these as **direct messages to the Meshtastic BBS node**.
 
 The original TC²-BBS one-letter menus and quick commands still work alongside the Connecticut shortcuts. More details: [PACKY_COMMANDS.md](PACKY_COMMANDS.md).
 
-## 📡 MQTT networks: CTMesh and ValleyMesh
+## 📡 MQTT network: CTMesh
 
-The desktop can watch two MQTT networks, receive-only by default. They are called **CTMesh** and **ValleyMesh** in this build. **Both names are placeholders:** there is no known Connecticut Meshtastic broker yet. Both default to the public `mqtt.meshtastic.org` broker and stay disabled until you turn them on in Settings. Swap in real Connecticut networks when they exist.
+The desktop can watch one MQTT network, **CTMesh**, receive-only by default. It defaults to the public `mqtt.meshtastic.org` broker and stays off until you turn it on in Settings; point it at your channel's topic. Networks are listed in one place (`NETWORK_LABELS` in `packy_mqtt_feed.py`), so adding a real second Connecticut network later is a small change.
 
 ## 🖥️ Desktop
 

@@ -5,6 +5,7 @@ from meshtastic.protobuf import mqtt_pb2
 from packy_dual_mqtt import DualMQTTMonitors
 from packy_mqtt_event_queue import MQTTEventQueue
 from packy_mqtt_feed import format_stats
+from second_network import add_test_network
 
 
 def envelope(packet_id=7, from_id=123):
@@ -17,27 +18,30 @@ def envelope(packet_id=7, from_id=123):
 
 
 class IngestStatsTests(unittest.TestCase):
+    def setUp(self):
+        add_test_network(self)
+
     def test_outcomes_are_counted_per_network(self):
         manager = DualMQTTMonitors(configparser.ConfigParser())
         manager.receive('ctmesh', envelope(1))
         manager.receive('ctmesh', envelope(1))
         manager.receive('ctmesh', b'junk')
         manager.receive('ctmesh', envelope(packet_id=0))
-        manager.receive('valleymesh', envelope(1))
+        manager.receive('testnet', envelope(1))
         stats = manager.ingest_stats()
         self.assertEqual(stats['ctmesh'], {
             'accepted': 1, 'duplicates': 1, 'queue_dropped': 0,
             'rejected': {'Invalid MQTT envelope': 1, 'Missing packet identity': 1}})
-        self.assertEqual(stats['valleymesh'], {'accepted': 1, 'duplicates': 0, 'rejected': {}, 'queue_dropped': 0})
+        self.assertEqual(stats['testnet'], {'accepted': 1, 'duplicates': 0, 'rejected': {}, 'queue_dropped': 0})
 
     def test_queue_overflow_is_attributed_to_the_network_that_lost_events(self):
         manager = DualMQTTMonitors(configparser.ConfigParser(), events=MQTTEventQueue(capacity=2))
-        manager.receive('valleymesh', envelope(1))
-        manager.receive('valleymesh', envelope(2))
+        manager.receive('testnet', envelope(1))
+        manager.receive('testnet', envelope(2))
         manager.receive('ctmesh', envelope(3))
         manager.receive('ctmesh', envelope(4))
         stats = manager.ingest_stats()
-        self.assertEqual(stats['valleymesh']['queue_dropped'], 2)
+        self.assertEqual(stats['testnet']['queue_dropped'], 2)
         self.assertEqual(stats['ctmesh']['queue_dropped'], 0)
         self.assertEqual(manager.events.stats()['dropped'], 2)
 

@@ -3,6 +3,7 @@
 This module does not implement MQTT publishing or radio transmission.
 """
 from dataclasses import dataclass
+from packy_mqtt_feed import NETWORK_LABELS
 
 
 @dataclass(frozen=True)
@@ -13,7 +14,7 @@ class SendDecision:
 
 def check_send_permission(config, network, *, demo=False, session_confirmed=False):
     """Deny by default; require explicit network and session permission."""
-    if network not in ('ctmesh', 'valleymesh'):
+    if network not in NETWORK_LABELS:
         return SendDecision(False, 'Unknown network')
     if demo:
         return SendDecision(False, 'Demo mode cannot transmit')

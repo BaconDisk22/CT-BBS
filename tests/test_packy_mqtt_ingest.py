@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from meshtastic.protobuf import mqtt_pb2
 from packy_dual_mqtt import DualMQTTMonitors
 from packy_mqtt_event_queue import MQTTEventQueue
+from second_network import add_test_network
 
 
 def envelope(packet_id=7, channel='LongFast'):
@@ -25,6 +26,7 @@ def message(payload, retain=False):
 
 class IngestTests(unittest.TestCase):
     def setUp(self):
+        add_test_network(self)
         self.manager = DualMQTTMonitors(configparser.ConfigParser())
 
     def test_broker_message_reaches_queue_with_network_label(self):
@@ -38,11 +40,11 @@ class IngestTests(unittest.TestCase):
 
     def test_networks_stay_separate(self):
         self.manager.monitors['ctmesh']._message(None, None, message(envelope(1)))
-        self.manager.monitors['valleymesh']._message(None, None, message(envelope(2)))
-        self.assertEqual([n for n, _ in self.manager.drain_events()], ['ctmesh', 'valleymesh'])
+        self.manager.monitors['testnet']._message(None, None, message(envelope(2)))
+        self.assertEqual([n for n, _ in self.manager.drain_events()], ['ctmesh', 'testnet'])
 
     def test_rejections_are_queued_not_raised(self):
-        monitor = self.manager.monitors['valleymesh']
+        monitor = self.manager.monitors['testnet']
         monitor._message(None, None, message(b'not protobuf'))
         monitor._message(None, None, message(envelope()))
         monitor._message(None, None, message(envelope()))
@@ -73,13 +75,13 @@ class IngestTests(unittest.TestCase):
         def flood(network):
             for _ in range(200):
                 manager.monitors[network]._message(None, None, message(payload))
-        threads = [threading.Thread(target=flood, args=(n,)) for n in ('ctmesh', 'valleymesh') * 2]
+        threads = [threading.Thread(target=flood, args=(n,)) for n in ('ctmesh', 'testnet') * 2]
         for t in threads:
             t.start()
         for t in threads:
             t.join()
         accepted = [n for n, r in manager.drain_events(limit=1000) if r.accepted]
-        self.assertEqual(sorted(accepted), ['ctmesh', 'valleymesh'])
+        self.assertEqual(sorted(accepted), ['ctmesh', 'testnet'])
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@
 import unittest
 from meshtastic.protobuf import mqtt_pb2
 from packy_mqtt_pipeline import MQTTMessagePipeline
+from second_network import add_test_network
 
 
 def sample(packet_id=7):
@@ -16,6 +17,9 @@ def sample(packet_id=7):
 
 
 class PipelineTests(unittest.TestCase):
+    def setUp(self):
+        add_test_network(self)
+
     def test_rejects_invalid_network_and_payload(self):
         pipeline = MQTTMessagePipeline()
         self.assertFalse(pipeline.process('unknown', sample()).accepted)
@@ -26,7 +30,7 @@ class PipelineTests(unittest.TestCase):
         packet = sample()
         self.assertTrue(pipeline.process('ctmesh', packet).accepted)
         self.assertFalse(pipeline.process('ctmesh', packet).accepted)
-        self.assertTrue(pipeline.process('valleymesh', packet).accepted)
+        self.assertTrue(pipeline.process('testnet', packet).accepted)
 
     def test_encrypted_payload_is_not_decrypted(self):
         result = MQTTMessagePipeline().process('ctmesh', sample())

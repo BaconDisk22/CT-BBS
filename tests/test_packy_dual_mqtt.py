@@ -2,6 +2,7 @@
 import configparser
 import unittest
 from packy_dual_mqtt import DualMQTTMonitors, network_config
+from second_network import add_test_network
 
 
 class FakeClient:
@@ -24,35 +25,38 @@ class FakeClient:
 
 
 class DualMQTTTests(unittest.TestCase):
+    def setUp(self):
+        add_test_network(self)
+
     def test_defaults_never_connect(self):
         manager = DualMQTTMonitors(configparser.ConfigParser())
         manager.start(factories={'ctmesh': lambda: self.fail('connected'),
-                                 'valleymesh': lambda: self.fail('connected')})
+                                 'testnet': lambda: self.fail('connected')})
         self.assertEqual(manager.snapshot()['ctmesh']['total'], 0)
 
     def test_both_clients_are_independent(self):
         config = configparser.ConfigParser()
-        for section in ('mqtt_ctmesh', 'mqtt_valleymesh'):
+        for section in ('mqtt_ctmesh', 'mqtt_testnet'):
             config[section] = {'enabled': 'true', 'topic': 'msh/US/2/e/test'}
-        clients = {name: FakeClient() for name in ('ctmesh', 'valleymesh')}
+        clients = {name: FakeClient() for name in ('ctmesh', 'testnet')}
         manager = DualMQTTMonitors(config)
         manager.start(factories={name: (lambda n=name: clients[n]) for name in clients})
         self.assertEqual(clients['ctmesh'].connected[0][0], 'mqtt.meshtastic.org')
-        self.assertEqual(clients['valleymesh'].connected[0][0], 'mqtt.meshtastic.org')
+        self.assertEqual(clients['testnet'].connected[0][0], 'mqtt.example.test')
         manager.stop('ctmesh')
         self.assertTrue(clients['ctmesh'].stopped)
-        self.assertFalse(clients['valleymesh'].stopped)
+        self.assertFalse(clients['testnet'].stopped)
         manager.stop()
 
     def test_manual_connect_does_not_start_other_network(self):
         config = configparser.ConfigParser()
-        for section in ('mqtt_ctmesh', 'mqtt_valleymesh'):
+        for section in ('mqtt_ctmesh', 'mqtt_testnet'):
             config[section] = {'enabled': 'true', 'topic': 'msh/US/2/e/test'}
         manager = DualMQTTMonitors(config)
         client = FakeClient()
         self.assertTrue(manager.connect('ctmesh', factory=lambda: client))
         self.assertEqual(len(client.connected), 1)
-        self.assertEqual(manager.snapshot()['valleymesh']['status'], 'Disabled')
+        self.assertEqual(manager.snapshot()['testnet']['status'], 'Disabled')
         manager.stop()
         self.assertTrue(client.stopped)
 
@@ -64,16 +68,16 @@ class DualMQTTTests(unittest.TestCase):
 
     def test_wildcard_topic_refuses_manual_connection(self):
         config = configparser.ConfigParser()
-        config['mqtt_valleymesh'] = {'enabled': 'true', 'topic': 'msh/US/2/e/#'}
+        config['mqtt_testnet'] = {'enabled': 'true', 'topic': 'msh/US/2/e/#'}
         manager = DualMQTTMonitors(config)
-        self.assertFalse(manager.connect('valleymesh', factory=lambda: self.fail('unexpected connect')))
+        self.assertFalse(manager.connect('testnet', factory=lambda: self.fail('unexpected connect')))
 
     def test_broad_topic_never_connects(self):
         config = configparser.ConfigParser()
-        config['mqtt_valleymesh'] = {'enabled': 'true', 'topic': 'msh/US/#'}
+        config['mqtt_testnet'] = {'enabled': 'true', 'topic': 'msh/US/#'}
         manager = DualMQTTMonitors(config)
-        manager.start(factories={'valleymesh': lambda: self.fail('unsafe connection')})
-        self.assertIn('narrow topic', manager.snapshot()['valleymesh']['status'])
+        manager.start(factories={'testnet': lambda: self.fail('unsafe connection')})
+        self.assertIn('narrow topic', manager.snapshot()['testnet']['status'])
 
     def test_no_credentials_in_diagnostics(self):
         config = configparser.ConfigParser()

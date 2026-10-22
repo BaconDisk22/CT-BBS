@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from packy_mqtt_dedupe import PacketDeduplicator
 from packy_mqtt_envelope import decode_service_envelope
+from packy_mqtt_feed import NETWORK_LABELS
 
 
 @dataclass(frozen=True)
@@ -17,7 +18,7 @@ class MQTTMessagePipeline:
         self.deduplicator = deduplicator or PacketDeduplicator()
 
     def process(self, network, payload):
-        if network not in ('ctmesh', 'valleymesh'):
+        if network not in NETWORK_LABELS:
             return ProcessingResult(False, 'Unknown network', network)
         try:
             summary = decode_service_envelope(payload)

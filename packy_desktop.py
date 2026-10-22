@@ -605,7 +605,7 @@ class PackyApp:
         if self.demo.get():
             return
         config = self.read_config()
-        selected = [name for name in ('ctmesh', 'valleymesh')
+        selected = [name for name in NETWORK_LABELS
                     if config.getboolean('mqtt_' + name, 'enabled', fallback=False)
                     and config.getboolean('mqtt_' + name, 'auto_connect', fallback=False)]
         if not selected:
@@ -620,13 +620,13 @@ class PackyApp:
     def mqtt_network_status(self):
         """Show each receive-only broker connection and its MQTT RX count."""
         if self.dual_mqtt is None:
-            lines = [f'{name}: Not connected; MQTT RX 0' for name in ('ctmesh', 'valleymesh')]
+            lines = [f'{name}: Not connected; MQTT RX 0' for name in NETWORK_LABELS]
         else:
             snapshots = self.dual_mqtt.snapshot()
             stats = self.dual_mqtt.ingest_stats()
             lines = [f"{name}: {snapshots[name]['status']}; MQTT RX {snapshots[name]['total']}\n"
                      f"  {format_stats(stats[name])}"
-                     for name in ('ctmesh', 'valleymesh')]
+                     for name in NETWORK_LABELS]
         self.show_info('Mesh Network Status', '\n'.join(lines))
 
     def mqtt_network_action(self, network, connect):
@@ -658,7 +658,6 @@ class PackyApp:
             'weather': [('internet_enabled', 'Enable internet weather', 'bool'), ('local_report', 'Offline report (include time)', ''), ('latitude', 'Latitude', '41.54'), ('longitude', 'Longitude', '-72.81')],
             'mqtt_monitor': [('enabled', 'Enable MQTT counter', 'bool'), ('host', 'Broker hostname', ''), ('topic', 'Subscription topic', ''), ('tls', 'Use TLS', 'bool_true'), ('port', 'Port', '8883'), ('username', 'Username', ''), ('password', 'Password', '')],
             'mqtt_ctmesh': [('enabled', 'Enable CTMesh monitor', 'bool'), ('auto_connect', 'Auto-connect CTMesh at startup', 'bool'), ('host', 'Broker hostname', 'mqtt.meshtastic.org'), ('topic', 'Topic: exact, or msh/<region>/2/e/<channel>/+', ''), ('tls', 'Use TLS', 'bool_true'), ('port', 'Port', '8883'), ('username', 'Username', ''), ('password', 'Password', '')],
-            'mqtt_valleymesh': [('enabled', 'Enable ValleyMesh monitor', 'bool'), ('auto_connect', 'Auto-connect ValleyMesh at startup', 'bool'), ('host', 'Broker hostname', 'mqtt.meshtastic.org'), ('topic', 'Topic: exact, or msh/<region>/2/e/<channel>/+', ''), ('tls', 'Use TLS', 'bool_true'), ('port', 'Port', '8883'), ('username', 'Username', ''), ('password', 'Password', '')],
             'personality': [('public_mode', 'Public greeting: clean / attitude / uncensored', 'clean'), ('allow_public_profanity', 'Allow profanity in generated public greetings', 'bool')],
         }
         for section, entries in sections.items():
@@ -666,7 +665,7 @@ class PackyApp:
             frame = self.scrollable(holder)
             frame.configure(padx=20, pady=12)
             frame.grid_columnconfigure(1, weight=1)
-            tabs.add(holder, text={'mqtt_monitor': 'MQTT', 'mqtt_ctmesh': 'CTMesh', 'mqtt_valleymesh': 'ValleyMesh', 'startup': 'Startup', 'announcements': 'Admins', 'weather': 'Weather', 'personality': 'Personality'}[section])
+            tabs.add(holder, text={'mqtt_monitor': 'MQTT', 'mqtt_ctmesh': 'CTMesh', 'startup': 'Startup', 'announcements': 'Admins', 'weather': 'Weather', 'personality': 'Personality'}[section])
             # One row per setting (label beside its field) so every tab fits on screen.
             for row, (key, label, default) in enumerate(entries):
                 if default.startswith('bool'):
@@ -700,7 +699,7 @@ class PackyApp:
                         raise ValueError('MQTT requires an explicit broker and topic.')
                     if not 1 <= config.getint('mqtt_monitor', 'port') <= 65535:
                         raise ValueError('Invalid MQTT port.')
-                for section in ('mqtt_ctmesh', 'mqtt_valleymesh'):
+                for section in ['mqtt_' + name for name in NETWORK_LABELS]:
                     if config.getboolean(section, 'enabled', fallback=False):
                         if not config.get(section, 'host', fallback='').strip():
                             raise ValueError(f'{section}: broker hostname is required.')
@@ -755,7 +754,7 @@ class PackyApp:
         rows = (
             [('SHOW MQTT NETWORK STATUS', self.mqtt_network_status, THEME['primary'])]
             + [(f'{verb} {name.upper()}', lambda n=name, c=(verb == 'CONNECT'): self.mqtt_network_action(n, c), THEME['panel'])
-               for name in ('ctmesh', 'valleymesh') for verb in ('CONNECT', 'DISCONNECT')],
+               for name in NETWORK_LABELS for verb in ('CONNECT', 'DISCONNECT')],
             [('CTMESH SETUP GUIDE', lambda: self.show_info('CTMesh MQTT / Radio Setup', guide), THEME['primary']),
              ('CHECK MQTT CONFIGURATION', check_mqtt_configuration, THEME['panel']),
              ('CHECK SEND SAFETY', self.check_ctmesh_send_safety, THEME['panel'])],
