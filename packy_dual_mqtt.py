@@ -13,7 +13,6 @@ from packy_online import ActivityCounter
 
 NETWORKS = {
     'ctmesh': ('mqtt_ctmesh', 'mqtt.meshtastic.org'),
-    'valleymesh': ('mqtt_valleymesh', 'mqtt.meshtastic.org'),
 }
 
 

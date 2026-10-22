@@ -7,7 +7,8 @@ import time
 from collections import deque
 from dataclasses import dataclass
 
-NETWORK_LABELS = {'ctmesh': 'CTMesh', 'valleymesh': 'ValleyMesh'}
+# The one place MQTT networks are listed; every other module checks against it.
+NETWORK_LABELS = {'ctmesh': 'CTMesh'}
 BROADCAST = 0xFFFFFFFF
 
 

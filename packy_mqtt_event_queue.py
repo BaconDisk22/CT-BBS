@@ -1,6 +1,7 @@
 """Thread-safe, bounded receive-only MQTT UI event handoff."""
 from collections import Counter, deque
 from threading import Lock
+from packy_mqtt_feed import NETWORK_LABELS
 
 
 class MQTTEventQueue:
@@ -14,7 +15,7 @@ class MQTTEventQueue:
         self.dropped_by_network = Counter()
 
     def push(self, network, result):
-        if network not in ('ctmesh', 'valleymesh'):
+        if network not in NETWORK_LABELS:
             return False
         with self._lock:
             if len(self._events) >= self.capacity:

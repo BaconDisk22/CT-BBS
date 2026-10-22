@@ -265,11 +265,10 @@ class DesktopWindowTests(unittest.TestCase):
         self.app.dual_mqtt.receive('ctmesh', b'junk')
         self.app.poll()
         central = self.app.wire_views['ctmesh'].get('1.0', 'end')
-        south = self.app.wire_views['valleymesh'].get('1.0', 'end')
         self.assertIn('from !0000007b', central)
         self.assertIn('ENCRYPTED', central)
         self.assertIn('Accepted 1 · duplicates 0 · rejected 1 (invalid mqtt envelope 1)', central)
-        self.assertNotIn('!0000007b', south)
+        self.assertEqual(set(self.app.wire_views), {'ctmesh'})
         self.app.dual_mqtt = None
 
     def test_server_log_stays_readable_at_every_window_size(self):

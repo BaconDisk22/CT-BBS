@@ -1,16 +1,20 @@
 """Offline bounded queue tests; merge event queue PR first."""
 import unittest
 from packy_mqtt_event_queue import MQTTEventQueue
+from second_network import add_test_network
 
 
 class QueueTests(unittest.TestCase):
+    def setUp(self):
+        add_test_network(self)
+
     def test_bounded_queue_drops_oldest(self):
         queue = MQTTEventQueue(capacity=2)
         queue.push('ctmesh', 'a')
-        queue.push('valleymesh', 'b')
+        queue.push('testnet', 'b')
         queue.push('ctmesh', 'c')
         self.assertEqual(queue.stats(), {'queued': 2, 'dropped': 1})
-        self.assertEqual(queue.drain(), [('valleymesh', 'b'), ('ctmesh', 'c')])
+        self.assertEqual(queue.drain(), [('testnet', 'b'), ('ctmesh', 'c')])
 
     def test_invalid_network_is_not_enqueued(self):
         queue = MQTTEventQueue()

@@ -2,6 +2,7 @@
 import configparser
 import unittest
 from packy_dual_mqtt import DualMQTTMonitors
+from second_network import add_test_network
 
 
 class FakeClient:
@@ -18,6 +19,9 @@ class FakeClient:
 
 
 class LifecycleTests(unittest.TestCase):
+    def setUp(self):
+        add_test_network(self)
+
     def test_duplicate_connect_does_not_start_second_loop(self):
         config = configparser.ConfigParser()
         config['mqtt_ctmesh'] = {'enabled': 'true', 'topic': 'msh/US/2/e/test'}
@@ -32,15 +36,15 @@ class LifecycleTests(unittest.TestCase):
 
     def test_stop_all_keeps_networks_independent(self):
         config = configparser.ConfigParser()
-        for section in ('mqtt_ctmesh', 'mqtt_valleymesh'):
+        for section in ('mqtt_ctmesh', 'mqtt_testnet'):
             config[section] = {'enabled': 'true', 'topic': 'msh/US/2/e/test'}
         manager = DualMQTTMonitors(config)
-        clients = {'ctmesh': FakeClient(), 'valleymesh': FakeClient()}
+        clients = {'ctmesh': FakeClient(), 'testnet': FakeClient()}
         for name in clients:
             self.assertTrue(manager.connect(name, factory=lambda n=name: clients[n]))
         manager.stop()
         self.assertEqual(clients['ctmesh'].stopped, 1)
-        self.assertEqual(clients['valleymesh'].stopped, 1)
+        self.assertEqual(clients['testnet'].stopped, 1)
 
 
 if __name__ == '__main__':
